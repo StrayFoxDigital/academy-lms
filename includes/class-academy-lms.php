@@ -24,8 +24,10 @@ class Academy_LMS {
 
     public function add_admin_menu() {
         add_menu_page( 'Academy LMS', 'Academy LMS', 'manage_options', 'academy-lms', array( $this, 'info_page' ), 'dashicons-welcome-learn-more' );
+        add_submenu_page( 'academy-lms', 'Employees', 'Employees', 'manage_options', 'academy-lms-employees', array( $this, 'employees_page' ) );
         add_submenu_page( 'academy-lms', 'Groups', 'Groups', 'manage_options', 'academy-lms-groups', array( $this, 'groups_page' ) );
         add_submenu_page( 'academy-lms', 'Training Courses', 'Training Courses', 'manage_options', 'academy-lms-courses', array( $this, 'courses_page' ) );
+        add_submenu_page( null, 'Edit Employee', 'Edit Employee', 'manage_options', 'academy-lms-edit-employee', array( $this, 'edit_employee_page' ) );
         add_submenu_page( null, 'Edit Group', 'Edit Group', 'manage_options', 'academy-lms-edit-group', array( $this, 'edit_group_page' ) );
         add_submenu_page( null, 'Edit Course', 'Edit Course', 'manage_options', 'academy-lms-edit-course', array( $this, 'edit_course_page' ) );
     }
@@ -42,12 +44,20 @@ class Academy_LMS {
         require_once ACADEMY_LMS_PATH . 'includes/courses-page.php';
     }
 
+    public function employees_page() {
+        require_once ACADEMY_LMS_PATH . 'includes/employees-page.php';
+    }
+
     public function edit_group_page() {
         require_once ACADEMY_LMS_PATH . 'includes/edit-group-page.php';
     }
 
     public function edit_course_page() {
         require_once ACADEMY_LMS_PATH . 'includes/edit-course-page.php';
+    }
+
+    public function edit_employee_page() {
+        require_once ACADEMY_LMS_PATH . 'includes/edit-employee-page.php';
     }
 
     public function replace_gravatar_with_custom_avatar( $avatar, $id_or_email, $size, $default, $alt ) {
