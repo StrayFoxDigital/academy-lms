@@ -1,0 +1,4 @@
+#your-profile .user-profile-picture,
+#your-profile .user-profile-picture + .description {
+    display: none;
+}
