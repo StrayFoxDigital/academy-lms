@@ -52,6 +52,20 @@ if ( isset( $_POST['course_id'] ) && isset( $_POST['date_completed'] ) ) {
     $course_id = intval( $_POST['course_id'] );
     $date_completed = sanitize_text_field( $_POST['date_completed'] );
 
+    // Handle file upload
+    if ( ! function_exists( 'wp_handle_upload' ) ) {
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+    }
+    $uploaded_file = $_FILES['training_document'];
+    $upload_overrides = array( 'test_form' => false );
+    $movefile = wp_handle_upload( $uploaded_file, $upload_overrides );
+
+    if ( $movefile && ! isset( $movefile['error'] ) ) {
+        $file_url = $movefile['url'];
+    } else {
+        $file_url = '';
+    }
+
     // Get course name
     $course = $wpdb->get_row( $wpdb->prepare( "SELECT course_name, expiry_duration FROM {$wpdb->prefix}academy_lms_courses WHERE id = %d", $course_id ) );
 
@@ -66,6 +80,7 @@ if ( isset( $_POST['course_id'] ) && isset( $_POST['date_completed'] ) ) {
                 'course_name' => $course->course_name,
                 'date_completed' => date( 'Y-m-d', strtotime( $date_completed ) ),
                 'expiry_date' => $expiry_date,
+                'uploads' => $file_url,
             )
         );
 
@@ -83,13 +98,13 @@ $managers = get_users( array(
 $courses = $wpdb->get_results( "SELECT id, course_name FROM {$wpdb->prefix}academy_lms_courses" );
 
 // Fetch employee's training records
-$training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_lms_training_log WHERE employee_id = %d", $user_id ) );
+$training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_lms_training_log WHERE employee_id = %d ORDER BY date_completed DESC", $user_id ) );
 
 ?>
 
 <div class="wrap">
     <h1>Edit Employee</h1>
-    <form method="post" action="">
+    <form method="post" action="" enctype="multipart/form-data">
         <table class="form-table">
             <tr valign="top">
                 <th scope="row"><label for="first_name">First Name</label></th>
@@ -137,7 +152,7 @@ $training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->pref
     <a href="<?php echo admin_url( 'admin.php?page=academy-lms-employees' ); ?>" class="button">Back to Employees</a>
 
     <h2>Add Training Record</h2>
-    <form method="post" action="">
+    <form method="post" action="" enctype="multipart/form-data">
         <table class="form-table">
             <tr valign="top">
                 <th scope="row"><label for="course_id">Course</label></th>
@@ -153,6 +168,10 @@ $training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->pref
             <tr valign="top">
                 <th scope="row"><label for="date_completed">Date Completed</label></th>
                 <td><input type="date" id="date_completed" name="date_completed" required /></td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="training_document">Training Document (optional)</label></th>
+                <td><input type="file" id="training_document" name="training_document" /></td>
             </tr>
         </table>
         <?php submit_button( 'Add Training Record' ); ?>
@@ -175,7 +194,13 @@ $training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->pref
                         <td><?php echo esc_html( $log->course_name ); ?></td>
                         <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->date_completed ) ) ); ?></td>
                         <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->expiry_date ) ) ); ?></td>
-                        <td><a href="#" class="button">View Files</a></td>
+                        <td>
+                            <?php if ( $log->uploads ) : ?>
+                                <a href="<?php echo esc_url( $log->uploads ); ?>" class="button" target="_blank">View Files</a>
+                            <?php else : ?>
+                                <a href="#" class="button disabled" aria-disabled="true">View Files</a>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>

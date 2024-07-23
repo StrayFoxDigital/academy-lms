@@ -12,7 +12,7 @@ if ( isset( $_POST['s'] ) ) {
 }
 
 $orderby = 'date_completed';
-$order = 'ASC';
+$order = 'DESC';
 
 if ( isset( $_GET['orderby'] ) && in_array( $_GET['orderby'], array( 'employee_name', 'course_name', 'date_completed', 'expiry_date' ) ) ) {
     $orderby = sanitize_sql_orderby( $_GET['orderby'] );
@@ -65,7 +65,11 @@ $sort_order = $order === 'ASC' ? 'DESC' : 'ASC';
                         <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->date_completed ) ) ); ?></td>
                         <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->expiry_date ) ) ); ?></td>
                         <td>
-                            <a href="#" class="button">View Files</a>
+                            <?php if ( $log->uploads ) : ?>
+                                <a href="<?php echo esc_url( $log->uploads ); ?>" class="button" target="_blank">View Files</a>
+                            <?php else : ?>
+                                <a href="#" class="button disabled" aria-disabled="true">View Files</a>
+                            <?php endif; ?>
                             <a href="<?php echo admin_url( 'admin.php?page=academy-lms-manage-training&training_id=' . $log->id ); ?>" class="button">Manage</a>
                         </td>
                     </tr>
