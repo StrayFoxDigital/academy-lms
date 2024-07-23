@@ -1,0 +1,5 @@
+-- DISPLAY USER PROFILE --              [Needs Styling]
+[academy_user_profile]
+
+-- DISPLAY USER'S TRAINING LOG --       [Needs Styling]
+[academy_user_training_log]

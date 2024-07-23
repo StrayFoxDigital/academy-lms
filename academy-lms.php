@@ -19,6 +19,7 @@ define( 'ACADEMY_LMS_PATH', plugin_dir_path( __FILE__ ) );
 // Include the main class file
 require_once ACADEMY_LMS_PATH . 'includes/class-academy-lms.php';
 require_once ACADEMY_LMS_PATH . 'includes/roles.php';
+require_once ACADEMY_LMS_PATH . 'includes/shortcodes.php'; // Include the shortcodes file
 
 // Initialize the plugin
 function academy_lms_init() {
@@ -26,7 +27,7 @@ function academy_lms_init() {
 }
 add_action( 'plugins_loaded', 'academy_lms_init' );
 
-// Activation hook: create the tables and folders
+// Activation hook: create the groups table
 register_activation_hook( __FILE__, 'academy_lms_install' );
 
 function academy_lms_install() {
@@ -55,6 +56,12 @@ function academy_lms_install() {
         PRIMARY KEY  (id)
     ) $charset_collate;";
     dbDelta( $sql );
+
+    // Add the training_provider column if it doesn't exist
+    $existing_columns = $wpdb->get_col("DESC $table_name", 0);
+    if ( ! in_array( 'training_provider', $existing_columns ) ) {
+        $wpdb->query("ALTER TABLE $table_name ADD training_provider varchar(255)");
+    }
 
     // Create training log table
     $table_name = $wpdb->prefix . 'academy_lms_training_log';
