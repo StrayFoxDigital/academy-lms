@@ -58,7 +58,31 @@ if ( isset( $_POST['course_id'] ) && isset( $_POST['date_completed'] ) ) {
     }
     $uploaded_file = $_FILES['training_document'];
     $upload_overrides = array( 'test_form' => false );
+
+    // Get the upload directory
+    $upload_dir = wp_upload_dir();
+    $custom_upload_dir = $upload_dir['basedir'] . '/vulpes_lms_uploads';
+
+    // Ensure the directory exists
+    if ( ! file_exists( $custom_upload_dir ) ) {
+        wp_mkdir_p( $custom_upload_dir );
+    }
+
+    // Set the custom upload directory
+    add_filter( 'upload_dir', function( $dirs ) use ( $custom_upload_dir ) {
+        $dirs['path'] = $custom_upload_dir;
+        $dirs['url'] = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $custom_upload_dir );
+        return $dirs;
+    } );
+
     $movefile = wp_handle_upload( $uploaded_file, $upload_overrides );
+
+    // Remove the filter after upload
+    remove_filter( 'upload_dir', function( $dirs ) use ( $custom_upload_dir ) {
+        $dirs['path'] = $custom_upload_dir;
+        $dirs['url'] = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $custom_upload_dir );
+        return $dirs;
+    } );
 
     if ( $movefile && ! isset( $movefile['error'] ) ) {
         $file_url = $movefile['url'];

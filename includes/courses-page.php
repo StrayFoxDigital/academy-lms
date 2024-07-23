@@ -7,80 +7,116 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $wpdb;
 $table_name = $wpdb->prefix . 'vulpes_lms_courses';
 
-if ( $_SERVER['REQUEST_METHOD'] == 'POST' && isset( $_POST['course_name'] ) ) {
+// Handle form submission for adding a course
+if ( isset( $_POST['course_name'] ) && isset( $_POST['course_description'] ) && isset( $_POST['expiry_duration'] ) && isset( $_POST['training_provider'] ) && isset( $_POST['subject_group'] ) && isset( $_POST['competency_score'] ) ) {
     $course_name = sanitize_text_field( $_POST['course_name'] );
     $course_description = sanitize_textarea_field( $_POST['course_description'] );
     $expiry_duration = intval( $_POST['expiry_duration'] );
     $training_provider = sanitize_text_field( $_POST['training_provider'] );
+    $subject_group = sanitize_text_field( $_POST['subject_group'] );
+    $competency_score = intval( $_POST['competency_score'] );
 
-    $wpdb->insert( $table_name, array(
-        'course_name' => $course_name,
-        'course_description' => $course_description,
-        'expiry_duration' => $expiry_duration,
-        'training_provider' => $training_provider,
-    ) );
+    $wpdb->insert(
+        $table_name,
+        array(
+            'course_name' => $course_name,
+            'course_description' => $course_description,
+            'expiry_duration' => $expiry_duration,
+            'training_provider' => $training_provider,
+            'subject_group' => $subject_group,
+            'competency_score' => $competency_score,
+        )
+    );
+
+    echo '<div class="updated"><p>Course added successfully.</p></div>';
 }
 
+// Handle course deletion
+if ( isset( $_GET['action'] ) && $_GET['action'] == 'delete' && isset( $_GET['course_id'] ) ) {
+    $course_id = intval( $_GET['course_id'] );
+    $wpdb->delete( $table_name, array( 'id' => $course_id ) );
+    echo '<div class="updated"><p>Course deleted successfully.</p></div>';
+}
+
+// Fetch all courses
 $courses = $wpdb->get_results( "SELECT * FROM $table_name" );
 
+// Fetch all subject groups
+$subject_groups = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}vulpes_lms_subject_groups" );
+
 ?>
+
 <div class="wrap">
-    <h1><?php esc_html_e( 'Training Courses', 'vulpes-lms' ); ?></h1>
-    <form method="post">
+    <h1>Manage Courses</h1>
+    <form method="post" action="">
         <table class="form-table">
-            <tr>
-                <th><label for="course_name"><?php esc_html_e( 'Course Name', 'vulpes-lms' ); ?></label></th>
-                <td><input type="text" name="course_name" id="course_name" class="regular-text" required></td>
+            <tr valign="top">
+                <th scope="row"><label for="course_name">Course Name</label></th>
+                <td><input type="text" id="course_name" name="course_name" class="regular-text" required /></td>
             </tr>
-            <tr>
-                <th><label for="course_description"><?php esc_html_e( 'Course Description', 'vulpes-lms' ); ?></label></th>
-                <td><textarea name="course_description" id="course_description" class="large-text" rows="5" required></textarea></td>
+            <tr valign="top">
+                <th scope="row"><label for="course_description">Course Description</label></th>
+                <td><textarea id="course_description" name="course_description" class="regular-text" required></textarea></td>
             </tr>
-            <tr>
-                <th><label for="expiry_duration"><?php esc_html_e( 'Expiry Duration (days)', 'vulpes-lms' ); ?></label></th>
-                <td><input type="number" name="expiry_duration" id="expiry_duration" class="small-text" required></td>
+            <tr valign="top">
+                <th scope="row"><label for="expiry_duration">Expiry Duration (days)</label></th>
+                <td><input type="number" id="expiry_duration" name="expiry_duration" class="regular-text" required /></td>
             </tr>
-            <tr>
-                <th><label for="training_provider"><?php esc_html_e( 'Training Provider', 'vulpes-lms' ); ?></label></th>
-                <td><input type="text" name="training_provider" id="training_provider" class="regular-text" required></td>
+            <tr valign="top">
+                <th scope="row"><label for="training_provider">Training Provider</label></th>
+                <td><input type="text" id="training_provider" name="training_provider" class="regular-text" required /></td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="subject_group">Subject Group</label></th>
+                <td>
+                    <select id="subject_group" name="subject_group" required>
+                        <option value="">Select a Subject Group</option>
+                        <?php foreach ( $subject_groups as $subject_group ) : ?>
+                            <option value="<?php echo esc_attr( $subject_group->subject_group_name ); ?>"><?php echo esc_html( $subject_group->subject_group_name ); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="competency_score">Competency Score</label></th>
+                <td><input type="number" id="competency_score" name="competency_score" class="regular-text" required /></td>
             </tr>
         </table>
-        <?php submit_button( __( 'Add Course', 'vulpes-lms' ) ); ?>
+        <?php submit_button( 'Add Course' ); ?>
     </form>
-    <h2><?php esc_html_e( 'Existing Courses', 'vulpes-lms' ); ?></h2>
+
+    <h2>Existing Courses</h2>
     <table class="widefat fixed" cellspacing="0">
         <thead>
             <tr>
-                <th><?php esc_html_e( 'Course Name', 'vulpes-lms' ); ?></th>
-                <th><?php esc_html_e( 'Course Description', 'vulpes-lms' ); ?></th>
-                <th><?php esc_html_e( 'Expiry Duration', 'vulpes-lms' ); ?></th>
-                <th><?php esc_html_e( 'Training Provider', 'vulpes-lms' ); ?></th>
-                <th><?php esc_html_e( 'Assigned Employees', 'vulpes-lms' ); ?></th>
-                <th><?php esc_html_e( 'Actions', 'vulpes-lms' ); ?></th>
+                <th id="columnname" class="manage-column column-columnname" scope="col">Course Name</th>
+                <th id="columnname" class="manage-column column-columnname" scope="col">Training Provider</th>
+                <th id="columnname" class="manage-column column-columnname" scope="col">Subject Group</th>
+                <th id="columnname" class="manage-column column-columnname" scope="col">Competency Score</th>
+                <th id="columnname" class="manage-column column-columnname" scope="col">Assigned Employees</th>
+                <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ( $courses as $course ) : ?>
+            <?php if ( ! empty( $courses ) ) : ?>
+                <?php foreach ( $courses as $course ) : ?>
+                    <tr>
+                        <td><?php echo esc_html( $course->course_name ); ?></td>
+                        <td><?php echo esc_html( $course->training_provider ); ?></td>
+                        <td><?php echo esc_html( $course->subject_group ); ?></td>
+                        <td><?php echo esc_html( $course->competency_score ); ?></td>
+                        <td><?php echo esc_html( count( get_users( array( 'meta_key' => 'course', 'meta_value' => $course->course_name ) ) ) ); ?></td>
+                        <td>
+                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-edit-course&course_id=' . $course->id ); ?>" class="button">Manage</a>
+                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-courses&action=delete&course_id=' . $course->id ); ?>" class="button" onclick="return confirm('Are you sure you want to delete this course?');">Delete</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else : ?>
                 <tr>
-                    <td><?php echo esc_html( $course->course_name ); ?></td>
-                    <td><?php echo esc_html( $course->course_description ); ?></td>
-                    <td><?php echo esc_html( $course->expiry_duration ); ?></td>
-                    <td><?php echo esc_html( $course->training_provider ); ?></td>
-                    <td>
-                        <?php
-                        $assigned_employees = $wpdb->get_var( $wpdb->prepare(
-                            "SELECT COUNT(*) FROM {$wpdb->prefix}vulpes_lms_training_log WHERE course_name = %s",
-                            $course->course_name
-                        ) );
-                        echo esc_html( $assigned_employees );
-                        ?>
-                    </td>
-                    <td>
-                        <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'vulpes-lms-edit-course', 'course_id' => $course->id ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'Manage', 'vulpes-lms' ); ?></a>
-                        <a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'course_id' => $course->id ), admin_url( 'admin.php?page=vulpes-lms-courses' ) ), 'delete_course_' . $course->id ) ); ?>" class="button"><?php esc_html_e( 'Delete', 'vulpes-lms' ); ?></a>
-                    </td>
+                    <td colspan="6">No courses found.</td>
                 </tr>
-            <?php endforeach; ?>
+            <?php endif; ?>
         </tbody>
     </table>
 </div>
