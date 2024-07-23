@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 global $wpdb;
-$table_name = $wpdb->prefix . 'academy_lms_groups';
+$table_name = $wpdb->prefix . 'vulpes_lms_groups';
 $group_id = isset( $_GET['group_id'] ) ? intval( $_GET['group_id'] ) : 0;
 
 if ( ! $group_id ) {
@@ -126,7 +126,7 @@ foreach ( $all_users as $user ) {
         </table>
         <?php submit_button( 'Update Group' ); ?>
     </form>
-    <a href="<?php echo admin_url( 'admin.php?page=academy-lms-groups' ); ?>" class="button">Back to Groups</a>
+    <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-groups' ); ?>" class="button">Back to Groups</a>
 </div>
 
 <script type="text/javascript">

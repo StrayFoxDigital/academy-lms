@@ -41,7 +41,7 @@ if ( isset( $_POST['first_name'] ) && isset( $_POST['last_name'] ) && isset( $_P
 
 // Fetch all users for display in the table
 $users = get_users();
-$groups = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}academy_lms_groups" );
+$groups = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}vulpes_lms_groups" );
 
 ?>
 
@@ -136,7 +136,7 @@ $groups = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}academy_lms_groups" 
                         </td>
                         <td><?php echo esc_html( get_user_meta( $user->ID, 'group', true ) ); ?></td>
                         <td>
-                            <a href="<?php echo admin_url( 'admin.php?page=academy-lms-edit-employee&user_id=' . $user->ID ); ?>" class="button">Manage</a>
+                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-edit-employee&user_id=' . $user->ID ); ?>" class="button">Manage</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Academy LMS
+Plugin Name: Vulpes LMS
 Plugin URI: https://academy.strayfox.co.uk
 Description: A Learning Management System (LMS) plugin for WordPress
 Version: 1.0
@@ -14,28 +14,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin path
-define( 'ACADEMY_LMS_PATH', plugin_dir_path( __FILE__ ) );
+define( 'VULPES_LMS_PATH', plugin_dir_path( __FILE__ ) );
 
 // Include the main class file
-require_once ACADEMY_LMS_PATH . 'includes/class-academy-lms.php';
-require_once ACADEMY_LMS_PATH . 'includes/roles.php';
-require_once ACADEMY_LMS_PATH . 'includes/shortcodes.php'; // Include the shortcodes file
+require_once VULPES_LMS_PATH . 'includes/class-vulpes-lms.php';
+require_once VULPES_LMS_PATH . 'includes/roles.php';
+require_once VULPES_LMS_PATH . 'includes/shortcodes.php'; // Include the shortcodes file
 
 // Initialize the plugin
-function academy_lms_init() {
-    $academy_lms = new Academy_LMS();
+function vulpes_lms_init() {
+    $vulpes_lms = new Vulpes_LMS();
 }
-add_action( 'plugins_loaded', 'academy_lms_init' );
+add_action( 'plugins_loaded', 'vulpes_lms_init' );
 
 // Activation hook: create the groups table
-register_activation_hook( __FILE__, 'academy_lms_install' );
+register_activation_hook( __FILE__, 'vulpes_lms_install' );
 
-function academy_lms_install() {
+function vulpes_lms_install() {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
 
     // Create groups table
-    $table_name = $wpdb->prefix . 'academy_lms_groups';
+    $table_name = $wpdb->prefix . 'vulpes_lms_groups';
     $sql = "CREATE TABLE $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         group_name varchar(255) NOT NULL,
@@ -46,7 +46,7 @@ function academy_lms_install() {
     dbDelta( $sql );
 
     // Create courses table
-    $table_name = $wpdb->prefix . 'academy_lms_courses';
+    $table_name = $wpdb->prefix . 'vulpes_lms_courses';
     $sql = "CREATE TABLE $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         course_name varchar(255) NOT NULL,
@@ -57,14 +57,8 @@ function academy_lms_install() {
     ) $charset_collate;";
     dbDelta( $sql );
 
-    // Add the training_provider column if it doesn't exist
-    $existing_columns = $wpdb->get_col("DESC $table_name", 0);
-    if ( ! in_array( 'training_provider', $existing_columns ) ) {
-        $wpdb->query("ALTER TABLE $table_name ADD training_provider varchar(255)");
-    }
-
     // Create training log table
-    $table_name = $wpdb->prefix . 'academy_lms_training_log';
+    $table_name = $wpdb->prefix . 'vulpes_lms_training_log';
     $sql = "CREATE TABLE $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         employee_id mediumint(9) NOT NULL,
@@ -79,7 +73,7 @@ function academy_lms_install() {
 
     // Create uploads folder
     $upload_dir = wp_upload_dir();
-    $dir = $upload_dir['basedir'] . '/academy_lms_uploads';
+    $dir = $upload_dir['basedir'] . '/vulpes_lms_uploads';
 
     if ( ! file_exists( $dir ) ) {
         wp_mkdir_p( $dir );

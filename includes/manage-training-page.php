@@ -12,7 +12,7 @@ if ( ! $training_id ) {
     return;
 }
 
-$training_log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_lms_training_log WHERE id = %d", $training_id ) );
+$training_log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_training_log WHERE id = %d", $training_id ) );
 
 if ( ! $training_log ) {
     echo '<div class="error"><p>Training record not found.</p></div>';
@@ -20,7 +20,7 @@ if ( ! $training_log ) {
 }
 
 // Fetch training provider from the course
-$course = $wpdb->get_row( $wpdb->prepare( "SELECT training_provider FROM {$wpdb->prefix}academy_lms_courses WHERE course_name = %s", $training_log->course_name ) );
+$course = $wpdb->get_row( $wpdb->prepare( "SELECT training_provider FROM {$wpdb->prefix}vulpes_lms_courses WHERE course_name = %s", $training_log->course_name ) );
 
 ?>
 
@@ -58,5 +58,5 @@ $course = $wpdb->get_row( $wpdb->prepare( "SELECT training_provider FROM {$wpdb-
             </td>
         </tr>
     </table>
-    <a href="<?php echo admin_url( 'admin.php?page=academy-lms-training-log' ); ?>" class="button">Back to Training Log</a>
+    <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-training-log' ); ?>" class="button">Back to Training Log</a>
 </div>

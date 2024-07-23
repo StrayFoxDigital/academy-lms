@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-class Academy_LMS_Custom_Fields {
+class Vulpes_LMS_Custom_Fields {
 
     public function __construct() {
         add_action( 'show_user_profile', array( $this, 'add_custom_user_profile_fields' ) );
@@ -18,50 +18,50 @@ class Academy_LMS_Custom_Fields {
 
     public function enqueue_media_uploader() {
         wp_enqueue_media();
-        wp_enqueue_script( 'academy-lms-avatar-upload', plugin_dir_url( __FILE__ ) . '../assets/js/avatar-upload.js', array( 'jquery' ), '1.0', true );
-        wp_enqueue_style( 'academy-lms-admin-style', plugin_dir_url( __FILE__ ) . '../assets/css/admin-style.css', array(), '1.0' );
+        wp_enqueue_script( 'vulpes-lms-avatar-upload', plugin_dir_url( __FILE__ ) . '../assets/js/avatar-upload.js', array( 'jquery' ), '1.0', true );
+        wp_enqueue_style( 'vulpes-lms-admin-style', plugin_dir_url( __FILE__ ) . '../assets/css/admin-style.css', array(), '1.0' );
     }
 
     public function add_custom_user_profile_fields( $user ) {
         ?>
-        <h3><?php esc_html_e( 'Additional Information', 'academy-lms' ); ?></h3>
+        <h3><?php esc_html_e( 'Additional Information', 'vulpes-lms' ); ?></h3>
 
         <table class="form-table">
             <tr>
-                <th><label for="position"><?php esc_html_e( 'Position', 'academy-lms' ); ?></label></th>
+                <th><label for="position"><?php esc_html_e( 'Position', 'vulpes-lms' ); ?></label></th>
                 <td>
                     <input type="text" name="position" id="position" value="<?php echo esc_attr( get_the_author_meta( 'position', $user->ID ) ); ?>" class="regular-text" /><br />
-                    <span class="description"><?php esc_html_e( 'Please enter your position.', 'academy-lms' ); ?></span>
+                    <span class="description"><?php esc_html_e( 'Please enter your position.', 'vulpes-lms' ); ?></span>
                 </td>
             </tr>
             <tr>
-                <th><label for="manager"><?php esc_html_e( 'Manager', 'academy-lms' ); ?></label></th>
+                <th><label for="manager"><?php esc_html_e( 'Manager', 'vulpes-lms' ); ?></label></th>
                 <td>
                     <input type="text" name="manager" id="manager" value="<?php echo esc_attr( get_the_author_meta( 'manager', $user->ID ) ); ?>" class="regular-text" /><br />
-                    <span class="description"><?php esc_html_e( 'Please enter your manager\'s name.', 'academy-lms' ); ?></span>
+                    <span class="description"><?php esc_html_e( 'Please enter your manager\'s name.', 'vulpes-lms' ); ?></span>
                 </td>
             </tr>
             <tr>
-                <th><label for="location"><?php esc_html_e( 'Location', 'academy-lms' ); ?></label></th>
+                <th><label for="location"><?php esc_html_e( 'Location', 'vulpes-lms' ); ?></label></th>
                 <td>
                     <input type="text" name="location" id="location" value="<?php echo esc_attr( get_the_author_meta( 'location', $user->ID ) ); ?>" class="regular-text" /><br />
-                    <span class="description"><?php esc_html_e( 'Please enter your location.', 'academy-lms' ); ?></span>
+                    <span class="description"><?php esc_html_e( 'Please enter your location.', 'vulpes-lms' ); ?></span>
                 </td>
             </tr>
             <tr>
-                <th><label for="group"><?php esc_html_e( 'Group', 'academy-lms' ); ?></label></th>
+                <th><label for="group"><?php esc_html_e( 'Group', 'vulpes-lms' ); ?></label></th>
                 <td>
                     <input type="text" name="group" id="group" value="<?php echo esc_attr( get_the_author_meta( 'group', $user->ID ) ); ?>" class="regular-text" /><br />
-                    <span class="description"><?php esc_html_e( 'Please enter your group.', 'academy-lms' ); ?></span>
+                    <span class="description"><?php esc_html_e( 'Please enter your group.', 'vulpes-lms' ); ?></span>
                 </td>
             </tr>
             <tr>
-                <th><label for="avatar"><?php esc_html_e( 'Avatar', 'academy-lms' ); ?></label></th>
+                <th><label for="avatar"><?php esc_html_e( 'Avatar', 'vulpes-lms' ); ?></label></th>
                 <td>
                     <input type="hidden" name="avatar" id="avatar" value="<?php echo esc_attr( get_the_author_meta( 'avatar', $user->ID ) ); ?>" class="regular-text" />
                     <img id="avatar-preview" src="<?php echo esc_attr( get_the_author_meta( 'avatar', $user->ID ) ); ?>" style="max-width: 150px; display: block; margin-bottom: 10px;" />
-                    <input type="button" id="upload-avatar-button" class="button" value="<?php esc_attr_e( 'Upload Avatar', 'academy-lms' ); ?>" />
-                    <input type="button" id="remove-avatar-button" class="button" value="<?php esc_attr_e( 'Remove Avatar', 'academy-lms' ); ?>" />
+                    <input type="button" id="upload-avatar-button" class="button" value="<?php esc_attr_e( 'Upload Avatar', 'vulpes-lms' ); ?>" />
+                    <input type="button" id="remove-avatar-button" class="button" value="<?php esc_attr_e( 'Remove Avatar', 'vulpes-lms' ); ?>" />
                 </td>
             </tr>
         </table>

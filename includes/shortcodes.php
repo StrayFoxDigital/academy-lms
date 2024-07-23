@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Function to display user profile
-function academy_lms_user_profile_shortcode( $atts ) {
+function vulpes_lms_user_profile_shortcode( $atts ) {
     // Get current user info
     $current_user = wp_get_current_user();
 
@@ -25,7 +25,7 @@ function academy_lms_user_profile_shortcode( $atts ) {
 
     ob_start();
     ?>
-    <div class="academy-lms-user-profile">
+    <div class="vulpes-lms-user-profile">
         <div class="user-avatar"><?php echo $avatar; ?></div>
         <div class="user-display-name"><strong><?php echo esc_html( $display_name ); ?></strong></div>
         <div class="user-email"><?php echo esc_html( $email ); ?></div>
@@ -39,7 +39,7 @@ function academy_lms_user_profile_shortcode( $atts ) {
 }
 
 // Function to display user training log
-function academy_lms_user_training_log_shortcode( $atts ) {
+function vulpes_lms_user_training_log_shortcode( $atts ) {
     // Get current user info
     $current_user = wp_get_current_user();
 
@@ -48,12 +48,12 @@ function academy_lms_user_training_log_shortcode( $atts ) {
     }
 
     global $wpdb;
-    $table_name = $wpdb->prefix . 'academy_lms_training_log';
+    $table_name = $wpdb->prefix . 'vulpes_lms_training_log';
     $training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_name WHERE employee_id = %d ORDER BY date_completed DESC", $current_user->ID ) );
 
     ob_start();
     ?>
-    <div class="academy-lms-user-training-log">
+    <div class="vulpes-lms-user-training-log">
         <table class="widefat fixed" cellspacing="0">
             <thead>
                 <tr>
@@ -92,9 +92,9 @@ function academy_lms_user_training_log_shortcode( $atts ) {
 }
 
 // Register the shortcodes
-function academy_lms_register_shortcodes() {
-    add_shortcode( 'academy_user_profile', 'academy_lms_user_profile_shortcode' );
-    add_shortcode( 'academy_user_training_log', 'academy_lms_user_training_log_shortcode' );
+function vulpes_lms_register_shortcodes() {
+    add_shortcode( 'vulpes_user_profile', 'vulpes_lms_user_profile_shortcode' );
+    add_shortcode( 'vulpes_user_training_log', 'vulpes_lms_user_training_log_shortcode' );
 }
 
-add_action( 'init', 'academy_lms_register_shortcodes' );
+add_action( 'init', 'vulpes_lms_register_shortcodes' );

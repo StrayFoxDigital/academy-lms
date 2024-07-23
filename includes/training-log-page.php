@@ -22,7 +22,7 @@ if ( isset( $_GET['order'] ) && in_array( $_GET['order'], array( 'ASC', 'DESC' )
     $order = sanitize_text_field( $_GET['order'] );
 }
 
-$table_name = $wpdb->prefix . 'academy_lms_training_log';
+$table_name = $wpdb->prefix . 'vulpes_lms_training_log';
 
 if ( $search_query ) {
     $training_logs = $wpdb->get_results( $wpdb->prepare(
@@ -49,10 +49,10 @@ $sort_order = $order === 'ASC' ? 'DESC' : 'ASC';
     <table class="widefat fixed" cellspacing="0">
         <thead>
             <tr>
-                <th scope="col"><a href="?page=academy-lms-training-log&orderby=employee_name&order=<?php echo $sort_order; ?>">Employee Name</a></th>
-                <th scope="col"><a href="?page=academy-lms-training-log&orderby=course_name&order=<?php echo $sort_order; ?>">Course Name</a></th>
-                <th scope="col"><a href="?page=academy-lms-training-log&orderby=date_completed&order=<?php echo $sort_order; ?>">Date Completed</a></th>
-                <th scope="col"><a href="?page=academy-lms-training-log&orderby=expiry_date&order=<?php echo $sort_order; ?>">Expiry Date</a></th>
+                <th scope="col"><a href="?page=vulpes-lms-training-log&orderby=employee_name&order=<?php echo $sort_order; ?>">Employee Name</a></th>
+                <th scope="col"><a href="?page=vulpes-lms-training-log&orderby=course_name&order=<?php echo $sort_order; ?>">Course Name</a></th>
+                <th scope="col"><a href="?page=vulpes-lms-training-log&orderby=date_completed&order=<?php echo $sort_order; ?>">Date Completed</a></th>
+                <th scope="col"><a href="?page=vulpes-lms-training-log&orderby=expiry_date&order=<?php echo $sort_order; ?>">Expiry Date</a></th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
@@ -70,7 +70,7 @@ $sort_order = $order === 'ASC' ? 'DESC' : 'ASC';
                             <?php else : ?>
                                 <a href="#" class="button disabled" aria-disabled="true">View Files</a>
                             <?php endif; ?>
-                            <a href="<?php echo admin_url( 'admin.php?page=academy-lms-manage-training&training_id=' . $log->id ); ?>" class="button">Manage</a>
+                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-manage-training&training_id=' . $log->id ); ?>" class="button">Manage</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

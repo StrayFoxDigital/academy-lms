@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 global $wpdb;
-$table_name = $wpdb->prefix . 'academy_lms_groups';
+$table_name = $wpdb->prefix . 'vulpes_lms_groups';
 
 // Handle form submission for adding a group
 if ( isset( $_POST['group_name'] ) && isset( $_POST['manager'] ) ) {
@@ -104,8 +104,8 @@ $users = get_users( array(
                         </td>
                         <td><?php echo esc_html( count( get_users( array( 'meta_key' => 'group', 'meta_value' => $group->group_name ) ) ) ); ?></td>
                         <td>
-                            <a href="<?php echo admin_url( 'admin.php?page=academy-lms-edit-group&group_id=' . $group->id ); ?>" class="button">Manage</a>
-                            <a href="<?php echo admin_url( 'admin.php?page=academy-lms-groups&action=delete&group_id=' . $group->id ); ?>" class="button" onclick="return confirm('Are you sure you want to delete this group?');">Delete</a>
+                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-edit-group&group_id=' . $group->id ); ?>" class="button">Manage</a>
+                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-groups&action=delete&group_id=' . $group->id ); ?>" class="button" onclick="return confirm('Are you sure you want to delete this group?');">Delete</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

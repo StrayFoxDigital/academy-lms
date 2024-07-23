@@ -67,13 +67,13 @@ if ( isset( $_POST['course_id'] ) && isset( $_POST['date_completed'] ) ) {
     }
 
     // Get course name
-    $course = $wpdb->get_row( $wpdb->prepare( "SELECT course_name, expiry_duration FROM {$wpdb->prefix}academy_lms_courses WHERE id = %d", $course_id ) );
+    $course = $wpdb->get_row( $wpdb->prepare( "SELECT course_name, expiry_duration FROM {$wpdb->prefix}vulpes_lms_courses WHERE id = %d", $course_id ) );
 
     if ( $course ) {
         $expiry_date = date( 'Y-m-d', strtotime( $date_completed . ' + ' . $course->expiry_duration . ' days' ) );
 
         $wpdb->insert(
-            $wpdb->prefix . 'academy_lms_training_log',
+            $wpdb->prefix . 'vulpes_lms_training_log',
             array(
                 'employee_id' => $user_id,
                 'employee_name' => $user->first_name . ' ' . $user->last_name,
@@ -95,10 +95,10 @@ $managers = get_users( array(
 ) );
 
 // Fetch all courses for the course dropdown
-$courses = $wpdb->get_results( "SELECT id, course_name FROM {$wpdb->prefix}academy_lms_courses" );
+$courses = $wpdb->get_results( "SELECT id, course_name FROM {$wpdb->prefix}vulpes_lms_courses" );
 
 // Fetch employee's training records
-$training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_lms_training_log WHERE employee_id = %d ORDER BY date_completed DESC", $user_id ) );
+$training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_training_log WHERE employee_id = %d ORDER BY date_completed DESC", $user_id ) );
 
 ?>
 
@@ -149,7 +149,7 @@ $training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->pref
         </table>
         <?php submit_button( 'Update Employee' ); ?>
     </form>
-    <a href="<?php echo admin_url( 'admin.php?page=academy-lms-employees' ); ?>" class="button">Back to Employees</a>
+    <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-employees' ); ?>" class="button">Back to Employees</a>
 
     <h2>Add Training Record</h2>
     <form method="post" action="" enctype="multipart/form-data">
