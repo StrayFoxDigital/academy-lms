@@ -29,6 +29,7 @@ class Vulpes_LMS {
         add_submenu_page( 'vulpes-lms', 'Subject Groups', 'Subject Groups', 'manage_options', 'vulpes-lms-subject-groups', array( $this, 'subject_groups_page' ) );
         add_submenu_page( 'vulpes-lms', 'Employees', 'Employees', 'manage_options', 'vulpes-lms-employees', array( $this, 'employees_page' ) );
         add_submenu_page( 'vulpes-lms', 'Employee Groups', 'Employee Groups', 'manage_options', 'vulpes-lms-groups', array( $this, 'groups_page' ) );
+        add_submenu_page( 'vulpes-lms', 'Help & Support', 'Help & Support', 'manage_options', 'vulpes-lms-help-support', array( $this, 'help_support_page' ) );
         add_submenu_page( null, 'Edit Employee', 'Edit Employee', 'manage_options', 'vulpes-lms-edit-employee', array( $this, 'edit_employee_page' ) );
         add_submenu_page( null, 'Edit Group', 'Edit Group', 'manage_options', 'vulpes-lms-edit-group', array( $this, 'edit_group_page' ) );
         add_submenu_page( null, 'Edit Course', 'Edit Course', 'manage_options', 'vulpes-lms-edit-course', array( $this, 'edit_course_page' ) );
@@ -58,6 +59,10 @@ class Vulpes_LMS {
 
     public function groups_page() {
         require_once VULPES_LMS_PATH . 'includes/groups-page.php';
+    }
+
+	public function help_support_page() {
+        require_once VULPES_LMS_PATH . 'includes/help-support-page.php';
     }
 
     public function edit_group_page() {
