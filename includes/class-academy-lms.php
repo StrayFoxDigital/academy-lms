@@ -27,9 +27,11 @@ class Academy_LMS {
         add_submenu_page( 'academy-lms', 'Employees', 'Employees', 'manage_options', 'academy-lms-employees', array( $this, 'employees_page' ) );
         add_submenu_page( 'academy-lms', 'Groups', 'Groups', 'manage_options', 'academy-lms-groups', array( $this, 'groups_page' ) );
         add_submenu_page( 'academy-lms', 'Training Courses', 'Training Courses', 'manage_options', 'academy-lms-courses', array( $this, 'courses_page' ) );
+        add_submenu_page( 'academy-lms', 'Training Log', 'Training Log', 'manage_options', 'academy-lms-training-log', array( $this, 'training_log_page' ) );
         add_submenu_page( null, 'Edit Employee', 'Edit Employee', 'manage_options', 'academy-lms-edit-employee', array( $this, 'edit_employee_page' ) );
         add_submenu_page( null, 'Edit Group', 'Edit Group', 'manage_options', 'academy-lms-edit-group', array( $this, 'edit_group_page' ) );
         add_submenu_page( null, 'Edit Course', 'Edit Course', 'manage_options', 'academy-lms-edit-course', array( $this, 'edit_course_page' ) );
+        add_submenu_page( null, 'Manage Training', 'Manage Training', 'manage_options', 'academy-lms-manage-training', array( $this, 'manage_training_page' ) );
     }
 
     public function info_page() {
@@ -48,6 +50,10 @@ class Academy_LMS {
         require_once ACADEMY_LMS_PATH . 'includes/employees-page.php';
     }
 
+    public function training_log_page() {
+        require_once ACADEMY_LMS_PATH . 'includes/training-log-page.php';
+    }
+
     public function edit_group_page() {
         require_once ACADEMY_LMS_PATH . 'includes/edit-group-page.php';
     }
@@ -58,6 +64,10 @@ class Academy_LMS {
 
     public function edit_employee_page() {
         require_once ACADEMY_LMS_PATH . 'includes/edit-employee-page.php';
+    }
+
+    public function manage_training_page() {
+        require_once ACADEMY_LMS_PATH . 'includes/manage-training-page.php';
     }
 
     public function replace_gravatar_with_custom_avatar( $avatar, $id_or_email, $size, $default, $alt ) {

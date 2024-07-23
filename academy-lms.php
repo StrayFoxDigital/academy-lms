@@ -26,7 +26,7 @@ function academy_lms_init() {
 }
 add_action( 'plugins_loaded', 'academy_lms_init' );
 
-// Activation hook: create the groups table
+// Activation hook: create the tables and folders
 register_activation_hook( __FILE__, 'academy_lms_install' );
 
 function academy_lms_install() {
@@ -55,10 +55,26 @@ function academy_lms_install() {
         PRIMARY KEY  (id)
     ) $charset_collate;";
     dbDelta( $sql );
-    
-    // Add the training_provider column if it doesn't exist
-    $existing_columns = $wpdb->get_col("DESC $table_name", 0);
-    if ( ! in_array( 'training_provider', $existing_columns ) ) {
-        $wpdb->query("ALTER TABLE $table_name ADD training_provider varchar(255)");
+
+    // Create training log table
+    $table_name = $wpdb->prefix . 'academy_lms_training_log';
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        employee_id mediumint(9) NOT NULL,
+        employee_name varchar(255) NOT NULL,
+        course_name varchar(255) NOT NULL,
+        date_completed date NOT NULL,
+        expiry_date date NOT NULL,
+        uploads varchar(255),
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+    dbDelta( $sql );
+
+    // Create uploads folder
+    $upload_dir = wp_upload_dir();
+    $dir = $upload_dir['basedir'] . '/academy_lms_uploads';
+
+    if ( ! file_exists( $dir ) ) {
+        wp_mkdir_p( $dir );
     }
 }
