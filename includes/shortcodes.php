@@ -27,12 +27,12 @@ class Vulpes_LMS_Shortcodes {
                 <?php echo get_avatar( $user_id, 96 ); ?>
             </div>
             <div class="user-info">
-                <p><strong><?php echo esc_html( $user->display_name ); ?></strong></p>
+                <h2><?php echo esc_html( $user->display_name ); ?></h2>
                 <p><?php echo esc_html( $user->user_email ); ?></p>
                 <hr />
-                <p><strong>Position:</strong> <?php echo esc_html( get_user_meta( $user_id, 'position', true ) ); ?></p>
-                <p><strong>Manager:</strong> <?php echo esc_html( get_user_meta( $user_id, 'manager', true ) ); ?></p>
-                <p><strong>Group:</strong> <?php echo esc_html( get_user_meta( $user_id, 'group', true ) ); ?></p>
+                <p><strong>Position:</strong> <?php echo esc_html( get_user_meta( $user_id, 'position', true ) ); ?></br>
+                <strong>Manager:</strong> <?php echo esc_html( get_user_meta( $user_id, 'manager', true ) ); ?></br>
+                <strong>Group:</strong> <?php echo esc_html( get_user_meta( $user_id, 'group', true ) ); ?></p>
             </div>
         </div>
         <?php
