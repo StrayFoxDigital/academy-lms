@@ -15,10 +15,6 @@ class Vulpes_LMS {
         require_once VULPES_LMS_PATH . 'includes/roles.php';
         new Vulpes_LMS_Roles();
 
-        // Load shortcodes
-        require_once VULPES_LMS_PATH . 'includes/shortcodes.php';
-        new Vulpes_LMS_Shortcodes();
-
         // Add admin menu
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 
@@ -27,13 +23,13 @@ class Vulpes_LMS {
     }
 
     public function add_admin_menu() {
-        add_menu_page( 'Vulpes LMS', 'Vulpes LMS', 'manage_options', 'vulpes-lms', array( $this, 'info_page' ), 'dashicons-welcome-learn-more' );
+        add_menu_page( 'Vulpes LMS', 'Vulpes LMS', 'manage_options', 'vulpes-lms', array( $this, 'admin_page' ), 'dashicons-welcome-learn-more' );
         add_submenu_page( 'vulpes-lms', 'Training Log', 'Training Log', 'manage_options', 'vulpes-lms-training-log', array( $this, 'training_log_page' ) );
         add_submenu_page( 'vulpes-lms', 'Training Courses', 'Training Courses', 'manage_options', 'vulpes-lms-courses', array( $this, 'courses_page' ) );
         add_submenu_page( 'vulpes-lms', 'Subject Groups', 'Subject Groups', 'manage_options', 'vulpes-lms-subject-groups', array( $this, 'subject_groups_page' ) );
         add_submenu_page( 'vulpes-lms', 'Employees', 'Employees', 'manage_options', 'vulpes-lms-employees', array( $this, 'employees_page' ) );
         add_submenu_page( 'vulpes-lms', 'Employee Groups', 'Employee Groups', 'manage_options', 'vulpes-lms-groups', array( $this, 'groups_page' ) );
-        add_submenu_page( 'vulpes-lms', 'Help & Support', 'Help & Support', 'manage_options', 'vulpes-lms-help-support', array( $this, 'help_support_page' ) );
+        add_submenu_page( 'vulpes-lms', 'Reports', 'Reports', 'manage_options', 'vulpes-lms-reports', array( $this, 'reports_page' ) );
         add_submenu_page( null, 'Edit Employee', 'Edit Employee', 'manage_options', 'vulpes-lms-edit-employee', array( $this, 'edit_employee_page' ) );
         add_submenu_page( null, 'Edit Group', 'Edit Group', 'manage_options', 'vulpes-lms-edit-group', array( $this, 'edit_group_page' ) );
         add_submenu_page( null, 'Edit Course', 'Edit Course', 'manage_options', 'vulpes-lms-edit-course', array( $this, 'edit_course_page' ) );
@@ -41,8 +37,41 @@ class Vulpes_LMS {
         add_submenu_page( null, 'Manage Training', 'Manage Training', 'manage_options', 'vulpes-lms-manage-training', array( $this, 'manage_training_page' ) );
     }
 
-    public function info_page() {
-        echo '<div class="wrap"><h1>Vulpes LMS</h1><p>This is an information page awaiting content.</p></div>';
+    public function admin_page() {
+        ?>
+        <div class="wrap">
+            <h1>Vulpes LMS</h1>
+            <h2 class="nav-tab-wrapper">
+                <a href="#general" class="nav-tab nav-tab-active">General</a>
+                <a href="#notifications" class="nav-tab">Notifications</a>
+                <a href="#help-support" class="nav-tab">Help & Support</a>
+            </h2>
+            
+            <div id="general" class="tab-content">
+                <p>This is the General tab content. Placeholder for now.</p>
+            </div>
+
+            <div id="notifications" class="tab-content" style="display: none;">
+                <p>This is the Notifications tab content. Placeholder for now.</p>
+            </div>
+
+            <div id="help-support" class="tab-content" style="display: none;">
+                <p>This is the Help & Support tab content. Placeholder for now.</p>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                $('.nav-tab').click(function(e) {
+                    e.preventDefault();
+                    $('.nav-tab').removeClass('nav-tab-active');
+                    $(this).addClass('nav-tab-active');
+                    $('.tab-content').hide();
+                    $($(this).attr('href')).show();
+                });
+            });
+        </script>
+        <?php
     }
 
     public function training_log_page() {
@@ -65,8 +94,8 @@ class Vulpes_LMS {
         require_once VULPES_LMS_PATH . 'includes/groups-page.php';
     }
 
-    public function help_support_page() {
-        require_once VULPES_LMS_PATH . 'includes/help-support-page.php';
+    public function reports_page() {
+        echo '<div class="wrap"><h1>Reports</h1><p>This is a placeholder for the Reports page.</p></div>';
     }
 
     public function edit_group_page() {
