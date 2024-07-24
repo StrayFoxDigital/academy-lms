@@ -15,6 +15,10 @@ class Vulpes_LMS {
         require_once VULPES_LMS_PATH . 'includes/roles.php';
         new Vulpes_LMS_Roles();
 
+        // Load shortcodes
+        require_once VULPES_LMS_PATH . 'includes/shortcodes.php';
+        new Vulpes_LMS_Shortcodes();
+
         // Add admin menu
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 
@@ -61,7 +65,7 @@ class Vulpes_LMS {
         require_once VULPES_LMS_PATH . 'includes/groups-page.php';
     }
 
-	public function help_support_page() {
+    public function help_support_page() {
         require_once VULPES_LMS_PATH . 'includes/help-support-page.php';
     }
 

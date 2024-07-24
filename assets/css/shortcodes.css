@@ -1,0 +1,17 @@
+/* assets/css/shortcodes.css */
+
+.vulpes-lms-shortcodes table th,
+.vulpes-lms-shortcodes table td {
+    text-align: left;
+}
+
+.vulpes-lms-shortcodes table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vulpes-lms-shortcodes table th,
+.vulpes-lms-shortcodes table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
