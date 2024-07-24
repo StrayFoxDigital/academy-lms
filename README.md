@@ -9,8 +9,9 @@ Vulpes LMS is a Learning Management System (LMS) plugin for WordPress. This plug
 - Manage employee groups and subject groups
 - Create and manage training courses
 - Log training records for employees
+- Enroll employees in courses
 - Upload and manage training documents
-- Frontend shortcodes for displaying user profiles and training logs
+- Frontend shortcodes for displaying user profiles, training logs, and enrolled courses
 
 ## Installation
 
@@ -36,6 +37,13 @@ Display the logged-in user's training log.
 [academy_user_training_log]
 ```
 
+### User Enrolled Courses
+Display the logged-in user's enrolled courses.
+
+```shortcode
+[vulpes_user_enrolled_courses]
+```
+
 ## Admin Pages
 
 ### Vulpes LMS
@@ -55,6 +63,9 @@ Add and manage employees. Assign employees to groups and log their training reco
 
 ### Employee Groups
 Create and manage employee groups. Assign employees to groups and set group managers.
+
+### Reports
+Placeholder for future reporting features.
 
 ## Additional Features
 
@@ -76,12 +87,28 @@ Training documents are uploaded to the vulpes_lms_uploads directory in the WordP
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request.
 
-### License
-This plugin is licensed under the GPLv2 or later.
+## License
+
+This plugin is proprietary software. You may not distribute, modify, or share it without explicit permission from the author. To use this plugin, you must purchase a license from Stray Fox Digital Limited or an authorised distributor.
+
+### Usage
+
+1. **Single Site License**: This license allows you to use the plugin on a single website.
+2. **Multi-Site License**: This license allows you to use the plugin on multiple websites.
+
+### Restrictions
+
+1. **No Redistribution**: You may not redistribute the plugin in any form.
+2. **No Modification**: You may not modify the plugin's source code without explicit permission from the author.
+3. **No Sharing**: You may not share your license key or the plugin with others.
+
+### Purchase and Support
+
+To purchase a license or get support, please visit https://strayfoxdigital.com.
 
 ### Author
-SFDIGITAL
+Stray Fox Digital Limited
 https://strayfoxdigital.com
 
-### Plugin URI
+### Plugin Development URL
 https://academy.strayfox.co.uk
