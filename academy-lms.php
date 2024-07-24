@@ -27,7 +27,7 @@ function vulpes_lms_init() {
 }
 add_action( 'plugins_loaded', 'vulpes_lms_init' );
 
-// Activation hook: create the groups table
+// Activation hook: create the necessary tables
 register_activation_hook( __FILE__, 'vulpes_lms_install' );
 
 function vulpes_lms_install() {
@@ -79,6 +79,20 @@ function vulpes_lms_install() {
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         subject_group_name varchar(255) NOT NULL,
         description text,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+    dbDelta( $sql );
+
+    // Create course assignments table
+    $table_name = $wpdb->prefix . 'vulpes_lms_course_assignments';
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        employee_id mediumint(9) NOT NULL,
+        employee_name varchar(255) NOT NULL,
+        course_id mediumint(9) NOT NULL,
+        course_name varchar(255) NOT NULL,
+        date_enrolled date NOT NULL,
+        status varchar(255) NOT NULL DEFAULT 'enrolled',
         PRIMARY KEY  (id)
     ) $charset_collate;";
     dbDelta( $sql );

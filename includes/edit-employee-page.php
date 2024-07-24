@@ -58,31 +58,7 @@ if ( isset( $_POST['course_id'] ) && isset( $_POST['date_completed'] ) ) {
     }
     $uploaded_file = $_FILES['training_document'];
     $upload_overrides = array( 'test_form' => false );
-
-    // Get the upload directory
-    $upload_dir = wp_upload_dir();
-    $custom_upload_dir = $upload_dir['basedir'] . '/vulpes_lms_uploads';
-
-    // Ensure the directory exists
-    if ( ! file_exists( $custom_upload_dir ) ) {
-        wp_mkdir_p( $custom_upload_dir );
-    }
-
-    // Set the custom upload directory
-    add_filter( 'upload_dir', function( $dirs ) use ( $custom_upload_dir ) {
-        $dirs['path'] = $custom_upload_dir;
-        $dirs['url'] = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $custom_upload_dir );
-        return $dirs;
-    } );
-
     $movefile = wp_handle_upload( $uploaded_file, $upload_overrides );
-
-    // Remove the filter after upload
-    remove_filter( 'upload_dir', function( $dirs ) use ( $custom_upload_dir ) {
-        $dirs['path'] = $custom_upload_dir;
-        $dirs['url'] = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $custom_upload_dir );
-        return $dirs;
-    } );
 
     if ( $movefile && ! isset( $movefile['error'] ) ) {
         $file_url = $movefile['url'];
@@ -112,6 +88,36 @@ if ( isset( $_POST['course_id'] ) && isset( $_POST['date_completed'] ) ) {
     }
 }
 
+// Handle form submission for enrolling in a course
+if ( isset( $_POST['enroll_course_id'] ) ) {
+    $course_id = intval( $_POST['enroll_course_id'] );
+    $course = $wpdb->get_row( $wpdb->prepare( "SELECT course_name FROM {$wpdb->prefix}vulpes_lms_courses WHERE id = %d", $course_id ) );
+
+    if ( $course ) {
+        $wpdb->insert(
+            $wpdb->prefix . 'vulpes_lms_course_assignments',
+            array(
+                'employee_id' => $user_id,
+                'employee_name' => $user->first_name . ' ' . $user->last_name,
+                'course_id' => $course_id,
+                'course_name' => $course->course_name,
+                'date_enrolled' => current_time( 'mysql' ),
+                'status' => 'enrolled'
+            )
+        );
+
+        echo '<div class="updated"><p>Course enrolled successfully.</p></div>';
+    }
+}
+
+// Handle unenroll action
+if ( isset( $_GET['unenroll'] ) && isset( $_GET['course_assignment_id'] ) ) {
+    $course_assignment_id = intval( $_GET['course_assignment_id'] );
+    $wpdb->delete( $wpdb->prefix . 'vulpes_lms_course_assignments', array( 'id' => $course_assignment_id ) );
+
+    echo '<div class="updated"><p>Course unenrolled successfully.</p></div>';
+}
+
 // Fetch all users for the manager dropdown
 $allowed_roles = array( 'administrator', 'editor', 'author' ); // Editor is now Superuser, Author is now Manager
 $managers = get_users( array(
@@ -124,114 +130,187 @@ $courses = $wpdb->get_results( "SELECT id, course_name FROM {$wpdb->prefix}vulpe
 // Fetch employee's training records
 $training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_training_log WHERE employee_id = %d ORDER BY date_completed DESC", $user_id ) );
 
+// Fetch employee's course enrollments
+$course_enrollments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_course_assignments WHERE employee_id = %d ORDER BY date_enrolled DESC", $user_id ) );
+
 ?>
 
 <div class="wrap">
     <h1>Edit Employee</h1>
-    <form method="post" action="" enctype="multipart/form-data">
-        <table class="form-table">
-            <tr valign="top">
-                <th scope="row"><label for="first_name">First Name</label></th>
-                <td><input type="text" id="first_name" name="first_name" class="regular-text" value="<?php echo esc_attr( $user->first_name ); ?>" required /></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="last_name">Last Name</label></th>
-                <td><input type="text" id="last_name" name="last_name" class="regular-text" value="<?php echo esc_attr( $user->last_name ); ?>" required /></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="position">Position</label></th>
-                <td><input type="text" id="position" name="position" class="regular-text" value="<?php echo esc_attr( get_user_meta( $user_id, 'position', true ) ); ?>" required /></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="manager">Manager</label></th>
-                <td>
-                    <select id="manager" name="manager" required>
-                        <option value="">Select a Manager</option>
-                        <?php foreach ( $managers as $manager_user ) : ?>
-                            <option value="<?php echo esc_attr( $manager_user->ID ); ?>" <?php selected( $manager_user->ID, get_user_meta( $user_id, 'manager', true ) ); ?>>
-                                <?php echo esc_html( $manager_user->display_name ); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="location">Location</label></th>
-                <td><input type="text" id="location" name="location" class="regular-text" value="<?php echo esc_attr( get_user_meta( $user_id, 'location', true ) ); ?>" required /></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="role">Role</label></th>
-                <td>
-                    <select id="role" name="role" required>
-                        <option value="administrator" <?php selected( 'administrator', $user->roles[0] ); ?>>Administrator</option>
-                        <option value="editor" <?php selected( 'editor', $user->roles[0] ); ?>>Superuser</option>
-                        <option value="author" <?php selected( 'author', $user->roles[0] ); ?>>Manager</option>
-                        <option value="subscriber" <?php selected( 'subscriber', $user->roles[0] ); ?>>Employee</option>
-                    </select>
-                </td>
-            </tr>
-        </table>
-        <?php submit_button( 'Update Employee' ); ?>
-    </form>
     <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-employees' ); ?>" class="button">Back to Employees</a>
-
-    <h2>Add Training Record</h2>
-    <form method="post" action="" enctype="multipart/form-data">
-        <table class="form-table">
-            <tr valign="top">
-                <th scope="row"><label for="course_id">Course</label></th>
-                <td>
-                    <select id="course_id" name="course_id" required>
-                        <option value="">Select a Course</option>
-                        <?php foreach ( $courses as $course ) : ?>
-                            <option value="<?php echo esc_attr( $course->id ); ?>"><?php echo esc_html( $course->course_name ); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="date_completed">Date Completed</label></th>
-                <td><input type="date" id="date_completed" name="date_completed" required /></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="training_document">Training Document (optional)</label></th>
-                <td><input type="file" id="training_document" name="training_document" /></td>
-            </tr>
-        </table>
-        <?php submit_button( 'Add Training Record' ); ?>
-    </form>
-
-    <h2>Training Records</h2>
-    <table class="widefat fixed" cellspacing="0">
-        <thead>
-            <tr>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Course Name</th>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Date Completed</th>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Expiry Date</th>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ( ! empty( $training_logs ) ) : ?>
-                <?php foreach ( $training_logs as $log ) : ?>
-                    <tr>
-                        <td><?php echo esc_html( $log->course_name ); ?></td>
-                        <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->date_completed ) ) ); ?></td>
-                        <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->expiry_date ) ) ); ?></td>
-                        <td>
-                            <?php if ( $log->uploads ) : ?>
-                                <a href="<?php echo esc_url( $log->uploads ); ?>" class="button" target="_blank">View Files</a>
-                            <?php else : ?>
-                                <a href="#" class="button disabled" aria-disabled="true">View Files</a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else : ?>
-                <tr>
-                    <td colspan="4">No training records found.</td>
+    <h2 class="nav-tab-wrapper">
+        <a href="#details" class="nav-tab nav-tab-active">Details</a>
+        <a href="#training-records" class="nav-tab">Training Records</a>
+        <a href="#enrollment" class="nav-tab">Enrollment</a>
+    </h2>
+    
+    <div id="details" class="tab-content">
+        <form method="post" action="" enctype="multipart/form-data">
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><label for="first_name">First Name</label></th>
+                    <td><input type="text" id="first_name" name="first_name" class="regular-text" value="<?php echo esc_attr( $user->first_name ); ?>" required /></td>
                 </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                <tr valign="top">
+                    <th scope="row"><label for="last_name">Last Name</label></th>
+                    <td><input type="text" id="last_name" name="last_name" class="regular-text" value="<?php echo esc_attr( $user->last_name ); ?>" required /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="position">Position</label></th>
+                    <td><input type="text" id="position" name="position" class="regular-text" value="<?php echo esc_attr( get_user_meta( $user_id, 'position', true ) ); ?>" required /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="manager">Manager</label></th>
+                    <td>
+                        <select id="manager" name="manager" required>
+                            <option value="">Select a Manager</option>
+                            <?php foreach ( $managers as $manager_user ) : ?>
+                                <option value="<?php echo esc_attr( $manager_user->ID ); ?>" <?php selected( $manager_user->ID, get_user_meta( $user_id, 'manager', true ) ); ?>>
+                                    <?php echo esc_html( $manager_user->display_name ); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="location">Location</label></th>
+                    <td><input type="text" id="location" name="location" class="regular-text" value="<?php echo esc_attr( get_user_meta( $user_id, 'location', true ) ); ?>" required /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="role">Role</label></th>
+                    <td>
+                        <select id="role" name="role" required>
+                            <option value="administrator" <?php selected( 'administrator', $user->roles[0] ); ?>>Administrator</option>
+                            <option value="editor" <?php selected( 'editor', $user->roles[0] ); ?>>Superuser</option>
+                            <option value="author" <?php selected( 'author', $user->roles[0] ); ?>>Manager</option>
+                            <option value="subscriber" <?php selected( 'subscriber', $user->roles[0] ); ?>>Employee</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button( 'Update Employee' ); ?>
+        </form>
+    </div>
+
+    <div id="training-records" class="tab-content" style="display: none;">
+        <h2>Add Training Record</h2>
+        <form method="post" action="" enctype="multipart/form-data">
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><label for="course_id">Course</label></th>
+                    <td>
+                        <select id="course_id" name="course_id" required>
+                            <option value="">Select a Course</option>
+                            <?php foreach ( $courses as $course ) : ?>
+                                <option value="<?php echo esc_attr( $course->id ); ?>"><?php echo esc_html( $course->course_name ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="date_completed">Date Completed</label></th>
+                    <td><input type="date" id="date_completed" name="date_completed" required /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="training_document">Training Document (optional)</label></th>
+                    <td><input type="file" id="training_document" name="training_document" /></td>
+                </tr>
+            </table>
+            <?php submit_button( 'Add Training Record' ); ?>
+        </form>
+
+        <h2>Training Records</h2>
+        <table class="widefat fixed" cellspacing="0">
+            <thead>
+                <tr>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Course Name</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Date Completed</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Expiry Date</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ( ! empty( $training_logs ) ) : ?>
+                    <?php foreach ( $training_logs as $log ) : ?>
+                        <tr>
+                            <td><?php echo esc_html( $log->course_name ); ?></td>
+                            <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->date_completed ) ) ); ?></td>
+                            <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->expiry_date ) ) ); ?></td>
+                            <td>
+                                <?php if ( $log->uploads ) : ?>
+                                    <a href="<?php echo esc_url( $log->uploads ); ?>" class="button" target="_blank">View Files</a>
+                                <?php else : ?>
+                                    <a href="#" class="button disabled" aria-disabled="true">View Files</a>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <tr>
+                        <td colspan="4">No training records found.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="enrollment" class="tab-content" style="display: none;">
+        <h2>Enroll in a Course</h2>
+        <form method="post" action="">
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><label for="enroll_course_id">Course</label></th>
+                    <td>
+                        <select id="enroll_course_id" name="enroll_course_id" required>
+                            <option value="">Select a Course</option>
+                            <?php foreach ( $courses as $course ) : ?>
+                                <option value="<?php echo esc_attr( $course->id ); ?>"><?php echo esc_html( $course->course_name ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button( 'Enroll' ); ?>
+        </form>
+
+        <h2>Enrolled Courses</h2>
+        <table class="widefat fixed" cellspacing="0">
+            <thead>
+                <tr>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Course Name</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Enrolled Date</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ( ! empty( $course_enrollments ) ) : ?>
+                    <?php foreach ( $course_enrollments as $enrollment ) : ?>
+                        <tr>
+                            <td><?php echo esc_html( $enrollment->course_name ); ?></td>
+                            <td><?php echo esc_html( date( 'd-m-Y', strtotime( $enrollment->date_enrolled ) ) ); ?></td>
+                            <td>
+                                <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-edit-employee&user_id=' . $user_id . '&unenroll=1&course_assignment_id=' . $enrollment->id ); ?>" class="button">Unenroll</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <tr>
+                        <td colspan="3">No enrolled courses found.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    $('.nav-tab').click(function(e) {
+        e.preventDefault();
+        $('.nav-tab').removeClass('nav-tab-active');
+        $(this).addClass('nav-tab-active');
+        $('.tab-content').hide();
+        $($(this).attr('href')).show();
+    });
+});
+</script>
