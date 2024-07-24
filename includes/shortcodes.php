@@ -20,6 +20,10 @@ class Vulpes_LMS_Shortcodes {
         $user_id = get_current_user_id();
         $user = get_userdata( $user_id );
 
+        $manager_id = get_user_meta( $user_id, 'manager', true );
+        $manager = get_userdata( $manager_id );
+        $manager_name = $manager ? $manager->display_name : 'N/A';
+
         ob_start();
         ?>
         <div class="vulpes-user-profile">
@@ -31,7 +35,7 @@ class Vulpes_LMS_Shortcodes {
                 <p><?php echo esc_html( $user->user_email ); ?></p>
                 <hr />
                 <p><strong>Position:</strong> <?php echo esc_html( get_user_meta( $user_id, 'position', true ) ); ?></br>
-                <strong>Manager:</strong> <?php echo esc_html( get_user_meta( $user_id, 'manager', true ) ); ?></br>
+                <strong>Manager:</strong> <?php echo esc_html( $manager_name ); ?></br>
                 <strong>Group:</strong> <?php echo esc_html( get_user_meta( $user_id, 'group', true ) ); ?></p>
             </div>
         </div>
