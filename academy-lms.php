@@ -4,8 +4,9 @@ Plugin Name: Vulpes LMS
 Plugin URI: https://academy.strayfox.co.uk
 Description: A Learning Management System (LMS) plugin for WordPress
 Version: 1.0
-Author: SFDIGITAL
+Author: Stray Fox Digital Limited
 Author URI: https://strayfoxdigital.com
+License: Proprietary
 */
 
 // Prevent direct access
