@@ -21,7 +21,7 @@ if ( ! $user ) {
 
 // Function to set custom upload directory
 function vulpes_lms_custom_upload_directory( $dirs ) {
-    $dirs['subdir'] = '/vulpes-academy-uploads' . $dirs['subdir'];
+    $dirs['subdir'] = '/vulpes-lms-uploads' . $dirs['subdir'];
     $dirs['path'] = $dirs['basedir'] . $dirs['subdir'];
     $dirs['url'] = $dirs['baseurl'] . $dirs['subdir'];
     return $dirs;

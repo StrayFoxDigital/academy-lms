@@ -100,7 +100,7 @@ function vulpes_lms_install() {
 
     // Create uploads folder
     $upload_dir = wp_upload_dir();
-    $dir = $upload_dir['basedir'] . '/vulpes_lms_uploads';
+    $dir = $upload_dir['basedir'] . '/vulpes-lms-uploads';
 
     if ( ! file_exists( $dir ) ) {
         wp_mkdir_p( $dir );
