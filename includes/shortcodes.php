@@ -11,6 +11,9 @@ class Vulpes_LMS_Shortcodes {
         add_shortcode( 'vulpes_user_training_log', array( $this, 'user_training_log_shortcode' ) );
         add_shortcode( 'vulpes_user_enrolled_courses', array( $this, 'user_enrolled_courses_shortcode' ) );
         add_shortcode( 'vulpes_user_subject_scores', array( $this, 'user_subject_scores_shortcode' ) );
+        add_shortcode( 'vulpes_full_training_log', array( $this, 'full_training_log_shortcode' ) );
+        add_shortcode( 'vulpes_all_groups', array( $this, 'all_groups_shortcode' ) );
+        add_shortcode( 'vulpes_my_team', array( $this, 'my_team_shortcode' ) ); // New shortcode
 
         // Enqueue shortcode styles
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
@@ -257,7 +260,157 @@ class Vulpes_LMS_Shortcodes {
         <?php
         return ob_get_clean();
     }
+
+    public function full_training_log_shortcode() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'vulpes_lms_training_log';
+
+        $training_logs = $wpdb->get_results( "SELECT * FROM $table_name ORDER BY date_completed DESC" );
+
+        if ( empty( $training_logs ) ) {
+            return '<p>No training records found.</p>';
+        }
+
+        ob_start();
+        ?>
+        <div class="vulpes-lms-shortcodes">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Course Name</th>
+                        <th>Date Completed</th>
+                        <th>Expiry Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ( $training_logs as $log ) : ?>
+                        <?php
+                            $status = 'Complete';
+                            $expiry_date = strtotime( $log->expiry_date );
+                            $current_date = time();
+                            $days_to_expiry = ( $expiry_date - $current_date ) / ( 60 * 60 * 24 );
+
+                            if ( $days_to_expiry <= 0 ) {
+                                $status = 'EXPIRED';
+                            } elseif ( $days_to_expiry <= 30 ) {
+                                $status = 'Due to Expire';
+                            }
+                        ?>
+                        <tr>
+                            <td><?php echo esc_html( $log->employee_name ); ?></td>
+                            <td><?php echo esc_html( $log->course_name ); ?></td>
+                            <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->date_completed ) ) ); ?></td>
+                            <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->expiry_date ) ) ); ?></td>
+                            <td><?php echo esc_html( $status ); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function all_groups_shortcode() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'vulpes_lms_groups';
+
+        $groups = $wpdb->get_results( "SELECT * FROM $table_name" );
+
+        if ( empty( $groups ) ) {
+            return '<p>No groups found.</p>';
+        }
+
+        ob_start();
+        ?>
+        <div class="vulpes-lms-shortcodes">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Group Name</th>
+                        <th>Manager</th>
+                        <th>Assigned Employees</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ( $groups as $group ) : ?>
+                        <tr>
+                            <td><?php echo esc_html( $group->group_name ); ?></td>
+                            <td>
+                                <?php 
+                                $manager = get_userdata( $group->manager );
+                                echo esc_html( $manager ? $manager->display_name : 'Manager not found' );
+                                ?>
+                            </td>
+                            <td><?php echo esc_html( count( get_users( array( 'meta_key' => 'group', 'meta_value' => $group->group_name ) ) ) ); ?></td>
+                            <td>
+                                <a href="#" class="button">Manage</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function my_team_shortcode() {
+        if ( ! is_user_logged_in() ) {
+            return '<p>You need to be logged in to view your team.</p>';
+        }
+
+        global $wpdb;
+        $user_id = get_current_user_id();
+        $users = get_users( array(
+            'meta_key' => 'manager',
+            'meta_value' => $user_id,
+        ) );
+
+        if ( empty( $users ) ) {
+            return '<p>You have no team members.</p>';
+        }
+
+        ob_start();
+        ?>
+        <div class="vulpes-lms-shortcodes">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Display Name</th>
+                        <th>Position</th>
+                        <th>Manager</th>
+                        <th>Group</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ( $users as $user ) : ?>
+                        <tr>
+                            <td><?php echo esc_html( $user->display_name ); ?></td>
+                            <td><?php echo esc_html( get_user_meta( $user->ID, 'position', true ) ); ?></td>
+                            <td>
+                                <?php 
+                                $manager_id = get_user_meta( $user->ID, 'manager', true );
+                                $manager = get_userdata( $manager_id );
+                                echo esc_html( $manager ? $manager->display_name : 'N/A' );
+                                ?>
+                            </td>
+                            <td><?php echo esc_html( get_user_meta( $user->ID, 'group', true ) ); ?></td>
+                            <td>
+                                <a href="#" class="button">Manage</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
 }
 
 new Vulpes_LMS_Shortcodes();
-?>

@@ -13,5 +13,34 @@
 .vulpes-lms-shortcodes table th,
 .vulpes-lms-shortcodes table td {
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #ddd; /* Changed border to 1px to ensure proper table border */
+}
+
+.vulpes-user-profile {
+    text-align: center;
+}
+
+.vulpes-user-profile .user-avatar img {
+    border-radius: 50%;
+}
+
+.vulpes-user-profile h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.vulpes-user-profile h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #666;
+}
+
+.vulpes-user-profile hr {
+    border: 0;
+    border-top: 1px solid #5F6C82;
+}
+
+.vulpes-user-profile .user-info p {
+    margin: 10px 0;
+    font-size: 16px;
 }

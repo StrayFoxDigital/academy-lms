@@ -4,8 +4,17 @@
 -- DISPLAY USER'S TRAINING LOG --       [Needs Styling]
 [vulpes_user_training_log]
 
--- DISPLAY USER'S ENROLLED COURSES --       [Needs Styling]
+-- DISPLAY USER'S ENROLLED COURSES --   [Needs Styling]
 [vulpes_user_enrolled_courses]
 
--- DISPLAY USER'S SUBJECT SCORES --       [Needs Styling]
+-- DISPLAY USER'S SUBJECT SCORES --     [Needs Styling]
 [vulpes_user_subject_scores]
+
+-- DISPLAY TRAINING LOG --              [Needs Styling]
+[vulpes_full_training_log]
+
+-- DISPLAY EMPLOYEE GROUPS --           [Needs Styling]
+[vulpes_full_training_log]
+
+-- DISPLAY MY TEAM --                   [Needs Styling]
+[vulpes_my_team]
