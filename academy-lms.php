@@ -111,3 +111,10 @@ function vulpes_lms_install() {
     // Update subject groups table
     vulpes_lms_update_subject_groups_table();
 }
+
+// Redirect to home URL after logout
+add_action('wp_logout', 'ps_redirect_after_logout');
+function ps_redirect_after_logout(){
+    wp_safe_redirect( home_url() );
+    exit();
+}
