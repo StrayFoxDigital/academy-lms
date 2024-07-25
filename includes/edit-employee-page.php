@@ -139,6 +139,32 @@ if ( isset( $_POST['enroll_course_id'] ) ) {
     }
 }
 
+// Handle form submission for enrolling in a subject group
+if ( isset( $_POST['enroll_subject_group_id'] ) ) {
+    $subject_group_id = intval( $_POST['enroll_subject_group_id'] );
+    $subject_group = $wpdb->get_row( $wpdb->prepare( "SELECT subject_group_name FROM {$wpdb->prefix}vulpes_lms_subject_groups WHERE id = %d", $subject_group_id ) );
+
+    if ( $subject_group ) {
+        $courses = $wpdb->get_results( $wpdb->prepare( "SELECT id, course_name FROM {$wpdb->prefix}vulpes_lms_courses WHERE subject_group = %s", $subject_group->subject_group_name ) );
+
+        foreach ( $courses as $course ) {
+            $wpdb->insert(
+                $wpdb->prefix . 'vulpes_lms_course_assignments',
+                array(
+                    'employee_id' => $user_id,
+                    'employee_name' => $user->first_name . ' ' . $user->last_name,
+                    'course_id' => $course->id,
+                    'course_name' => $course->course_name,
+                    'date_enrolled' => current_time( 'mysql' ),
+                    'status' => 'enrolled'
+                )
+            );
+        }
+
+        echo '<div class="updated"><p>Subject group enrolled successfully.</p></div>';
+    }
+}
+
 // Handle unenroll action
 if ( isset( $_GET['unenroll'] ) && isset( $_GET['course_assignment_id'] ) ) {
     $course_assignment_id = intval( $_GET['course_assignment_id'] );
@@ -155,6 +181,9 @@ $managers = get_users( array(
 
 // Fetch all courses for the course dropdown
 $courses = $wpdb->get_results( "SELECT id, course_name FROM {$wpdb->prefix}vulpes_lms_courses" );
+
+// Fetch all subject groups for the subject group dropdown
+$subject_groups = $wpdb->get_results( "SELECT id, subject_group_name FROM {$wpdb->prefix}vulpes_lms_subject_groups" );
 
 // Fetch employee's training records
 $training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_training_log WHERE employee_id = %d ORDER BY date_completed DESC", $user_id ) );
@@ -314,6 +343,24 @@ $course_enrollments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb-
                 </tr>
             </table>
             <?php submit_button( 'Enroll' ); ?>
+        </form>
+
+        <h2>Enroll in a Subject Group</h2>
+        <form method="post" action="">
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><label for="enroll_subject_group_id">Subject Group</label></th>
+                    <td>
+                        <select id="enroll_subject_group_id" name="enroll_subject_group_id" required>
+                            <option value="">Select a Subject Group</option>
+                            <?php foreach ( $subject_groups as $subject_group ) : ?>
+                                <option value="<?php echo esc_attr( $subject_group->id ); ?>"><?php echo esc_html( $subject_group->subject_group_name ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button( 'Enroll in Subject Group' ); ?>
         </form>
 
         <h2>Enrolled Courses</h2>
