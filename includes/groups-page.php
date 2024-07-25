@@ -60,60 +60,87 @@ $users = get_users( array(
 
 <div class="wrap">
     <h1>Manage Groups</h1>
-    <form method="post" action="">
-        <table class="form-table">
-            <tr valign="top">
-                <th scope="row"><label for="group_name">Group Name</label></th>
-                <td><input type="text" id="group_name" name="group_name" class="regular-text" required /></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="manager">Manager</label></th>
-                <td>
-                    <select id="manager" name="manager" required>
-                        <option value="">Select a Manager</option>
-                        <?php foreach ( $users as $user ) : ?>
-                            <option value="<?php echo esc_attr( $user->ID ); ?>"><?php echo esc_html( $user->display_name ); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-            </tr>
-        </table>
-        <?php submit_button( 'Add Group' ); ?>
-    </form>
+    <h2 class="nav-tab-wrapper">
+        <a href="#employee-groups" class="nav-tab nav-tab-active">Employee Groups</a>
+        <a href="#add-new" class="nav-tab">Add New</a>
+    </h2>
 
-    <h2>Existing Groups</h2>
-    <table class="widefat fixed" cellspacing="0">
-        <thead>
-            <tr>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Group Name</th>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Manager</th>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Assigned Employees</th>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ( ! empty( $groups ) ) : ?>
-                <?php foreach ( $groups as $group ) : ?>
-                    <tr>
-                        <td><?php echo esc_html( $group->group_name ); ?></td>
-                        <td>
-                            <?php 
-                            $manager = get_userdata( $group->manager );
-                            echo esc_html( $manager ? $manager->display_name : 'Manager not found' );
-                            ?>
-                        </td>
-                        <td><?php echo esc_html( count( get_users( array( 'meta_key' => 'group', 'meta_value' => $group->group_name ) ) ) ); ?></td>
-                        <td>
-                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-edit-group&group_id=' . $group->id ); ?>" class="button">Manage</a>
-                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-groups&action=delete&group_id=' . $group->id ); ?>" class="button" onclick="return confirm('Are you sure you want to delete this group?');">Delete</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else : ?>
+    <div id="employee-groups" class="tab-content">
+        <h2>Existing Groups</h2>
+        <table class="widefat fixed" cellspacing="0">
+            <thead>
                 <tr>
-                    <td colspan="4">No groups found.</td>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Group Name</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Manager</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Assigned Employees</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
                 </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php if ( ! empty( $groups ) ) : ?>
+                    <?php foreach ( $groups as $group ) : ?>
+                        <tr>
+                            <td><?php echo esc_html( $group->group_name ); ?></td>
+                            <td>
+                                <?php 
+                                $manager = get_userdata( $group->manager );
+                                echo esc_html( $manager ? $manager->display_name : 'Manager not found' );
+                                ?>
+                            </td>
+                            <td><?php echo esc_html( count( get_users( array( 'meta_key' => 'group', 'meta_value' => $group->group_name ) ) ) ); ?></td>
+                            <td>
+                                <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-edit-group&group_id=' . $group->id ); ?>" class="button">Manage</a>
+                                <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-groups&action=delete&group_id=' . $group->id ); ?>" class="button" onclick="return confirm('Are you sure you want to delete this group?');">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <tr>
+                        <td colspan="4">No groups found.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="add-new" class="tab-content" style="display: none;">
+        <form method="post" action="">
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><label for="group_name">Group Name</label></th>
+                    <td><input type="text" id="group_name" name="group_name" class="regular-text" required /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="manager">Manager</label></th>
+                    <td>
+                        <select id="manager" name="manager" required>
+                            <option value="">Select a Manager</option>
+                            <?php foreach ( $users as $user ) : ?>
+                                <option value="<?php echo esc_attr( $user->ID ); ?>"><?php echo esc_html( $user->display_name ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button( 'Add Group' ); ?>
+        </form>
+    </div>
 </div>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    $('.nav-tab').click(function(e) {
+        e.preventDefault();
+        $('.nav-tab').removeClass('nav-tab-active');
+        $(this).addClass('nav-tab-active');
+        $('.tab-content').hide();
+        $($(this).attr('href')).show();
+    });
+
+    // Keep the active tab after form submission
+    var hash = window.location.hash;
+    if (hash) {
+        $('.nav-tab[href="' + hash + '"]').click();
+    }
+});
+</script>

@@ -104,7 +104,16 @@ if ( isset( $_POST['course_id'] ) && isset( $_POST['date_completed'] ) ) {
             )
         );
 
-        echo '<div class="updated"><p>Training record added successfully.</p></div>';
+        // Delete the course enrollment record
+        $wpdb->delete(
+            $wpdb->prefix . 'vulpes_lms_course_assignments',
+            array(
+                'employee_id' => $user_id,
+                'course_id' => $course_id,
+            )
+        );
+
+        echo '<div class="updated"><p>Training record added and course enrollment deleted successfully.</p></div>';
     }
 }
 
@@ -246,16 +255,30 @@ $course_enrollments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb-
                     <th id="columnname" class="manage-column column-columnname" scope="col">Course Name</th>
                     <th id="columnname" class="manage-column column-columnname" scope="col">Date Completed</th>
                     <th id="columnname" class="manage-column column-columnname" scope="col">Expiry Date</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Status</th>
                     <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if ( ! empty( $training_logs ) ) : ?>
                     <?php foreach ( $training_logs as $log ) : ?>
+                        <?php
+                            $status = 'Complete';
+                            $expiry_date = strtotime( $log->expiry_date );
+                            $current_date = time();
+                            $days_to_expiry = ( $expiry_date - $current_date ) / ( 60 * 60 * 24 );
+
+                            if ( $days_to_expiry <= 0 ) {
+                                $status = 'EXPIRED';
+                            } elseif ( $days_to_expiry <= 30 ) {
+                                $status = 'Due to Expire';
+                            }
+                        ?>
                         <tr>
                             <td><?php echo esc_html( $log->course_name ); ?></td>
                             <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->date_completed ) ) ); ?></td>
                             <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->expiry_date ) ) ); ?></td>
+                            <td><?php echo esc_html( $status ); ?></td>
                             <td>
                                 <?php if ( $log->uploads ) : ?>
                                     <a href="<?php echo esc_url( $log->uploads ); ?>" class="button" target="_blank">View Files</a>
@@ -267,7 +290,7 @@ $course_enrollments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb-
                     <?php endforeach; ?>
                 <?php else : ?>
                     <tr>
-                        <td colspan="4">No training records found.</td>
+                        <td colspan="5">No training records found.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

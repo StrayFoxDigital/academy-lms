@@ -21,6 +21,7 @@ define( 'VULPES_LMS_PATH', plugin_dir_path( __FILE__ ) );
 require_once VULPES_LMS_PATH . 'includes/class-vulpes-lms.php';
 require_once VULPES_LMS_PATH . 'includes/roles.php';
 require_once VULPES_LMS_PATH . 'includes/shortcodes.php'; // Include the shortcodes file
+require_once VULPES_LMS_PATH . 'includes/functions.php'; // Include the functions file
 
 // Initialize the plugin
 function vulpes_lms_init() {
@@ -80,6 +81,7 @@ function vulpes_lms_install() {
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         subject_group_name varchar(255) NOT NULL,
         description text,
+        total_achievable_score int DEFAULT 0,
         PRIMARY KEY  (id)
     ) $charset_collate;";
     dbDelta( $sql );
@@ -105,4 +107,7 @@ function vulpes_lms_install() {
     if ( ! file_exists( $dir ) ) {
         wp_mkdir_p( $dir );
     }
+
+    // Update subject groups table
+    vulpes_lms_update_subject_groups_table();
 }

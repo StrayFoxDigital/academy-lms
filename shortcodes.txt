@@ -6,3 +6,6 @@
 
 -- DISPLAY USER'S ENROLLED COURSES --       [Needs Styling]
 [vulpes_user_enrolled_courses]
+
+-- DISPLAY USER'S SUBJECT SCORES --       [Needs Styling]
+[vulpes_user_subject_scores]

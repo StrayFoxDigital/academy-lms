@@ -51,48 +51,77 @@ $subject_groups = $wpdb->get_results( "SELECT * FROM $table_name" );
 
 <div class="wrap">
     <h1>Manage Subject Groups</h1>
-    <form method="post" action="">
-        <table class="form-table">
-            <tr valign="top">
-                <th scope="row"><label for="subject_group_name">Subject Group Name</label></th>
-                <td><input type="text" id="subject_group_name" name="subject_group_name" class="regular-text" required /></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="description">Description</label></th>
-                <td><textarea id="description" name="description" class="regular-text"></textarea></td>
-            </tr>
-        </table>
-        <?php submit_button( 'Add Subject Group' ); ?>
-    </form>
+    <h2 class="nav-tab-wrapper">
+        <a href="#subject-groups" class="nav-tab nav-tab-active">Subject Groups</a>
+        <a href="#add-new" class="nav-tab">Add New</a>
+    </h2>
 
-    <h2>Existing Subject Groups</h2>
-    <table class="widefat fixed" cellspacing="0">
-        <thead>
-            <tr>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Subject Group Name</th>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Description</th>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Courses Assigned</th>
-                <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ( ! empty( $subject_groups ) ) : ?>
-                <?php foreach ( $subject_groups as $subject_group ) : ?>
-                    <tr>
-                        <td><?php echo esc_html( $subject_group->subject_group_name ); ?></td>
-                        <td><?php echo esc_html( $subject_group->description ); ?></td>
-                        <td><?php echo esc_html( count( $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}vulpes_lms_courses WHERE subject_group = %s", $subject_group->subject_group_name ) ) ) ); ?></td>
-                        <td>
-                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-edit-subject-group&subject_group_id=' . $subject_group->id ); ?>" class="button">Manage</a>
-                            <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-subject-groups&action=delete&subject_group_id=' . $subject_group->id ); ?>" class="button" onclick="return confirm('Are you sure you want to delete this subject group?');">Delete</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else : ?>
+    <div id="subject-groups" class="tab-content">
+        <h2>Existing Subject Groups</h2>
+        <table class="widefat fixed" cellspacing="0">
+            <thead>
                 <tr>
-                    <td colspan="4">No subject groups found.</td>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Subject Group Name</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Description</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Courses Assigned</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Total Achievable Score</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
                 </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php if ( ! empty( $subject_groups ) ) : ?>
+                    <?php foreach ( $subject_groups as $subject_group ) : ?>
+                        <tr>
+                            <td><?php echo esc_html( $subject_group->subject_group_name ); ?></td>
+                            <td><?php echo esc_html( $subject_group->description ); ?></td>
+                            <td><?php echo esc_html( count( $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}vulpes_lms_courses WHERE subject_group = %s", $subject_group->subject_group_name ) ) ) ); ?></td>
+                            <td><?php echo esc_html( vulpes_lms_calculate_total_achievable_score( $subject_group->subject_group_name ) ); ?></td>
+                            <td>
+                                <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-edit-subject-group&subject_group_id=' . $subject_group->id ); ?>" class="button">Manage</a>
+                                <a href="<?php echo admin_url( 'admin.php?page=vulpes-lms-subject-groups&action=delete&subject_group_id=' . $subject_group->id ); ?>" class="button" onclick="return confirm('Are you sure you want to delete this subject group?');">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <tr>
+                        <td colspan="5">No subject groups found.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="add-new" class="tab-content" style="display: none;">
+        <form method="post" action="">
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><label for="subject_group_name">Subject Group Name</label></th>
+                    <td><input type="text" id="subject_group_name" name="subject_group_name" class="regular-text" required /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="description">Description</label></th>
+                    <td><textarea id="description" name="description" class="regular-text"></textarea></td>
+                </tr>
+            </table>
+            <?php submit_button( 'Add Subject Group' ); ?>
+        </form>
+    </div>
 </div>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    $('.nav-tab').click(function(e) {
+        e.preventDefault();
+        $('.nav-tab').removeClass('nav-tab-active');
+        $(this).addClass('nav-tab-active');
+        $('.tab-content').hide();
+        $($(this).attr('href')).show();
+    });
+
+    // Keep the active tab after form submission
+    var hash = window.location.hash;
+    if (hash) {
+        $('.nav-tab[href="' + hash + '"]').click();
+    }
+});
+</script>
