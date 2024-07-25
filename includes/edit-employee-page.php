@@ -19,6 +19,14 @@ if ( ! $user ) {
     return;
 }
 
+// Function to set custom upload directory
+function vulpes_lms_custom_upload_directory( $dirs ) {
+    $dirs['subdir'] = '/vulpes-academy-uploads' . $dirs['subdir'];
+    $dirs['path'] = $dirs['basedir'] . $dirs['subdir'];
+    $dirs['url'] = $dirs['baseurl'] . $dirs['subdir'];
+    return $dirs;
+}
+
 // Handle form submission for updating employee details
 if ( isset( $_POST['first_name'] ) && isset( $_POST['last_name'] ) && isset( $_POST['position'] ) && isset( $_POST['manager'] ) && isset( $_POST['location'] ) && isset( $_POST['role'] ) ) {
     $first_name = sanitize_text_field( $_POST['first_name'] );
@@ -53,15 +61,27 @@ if ( isset( $_POST['course_id'] ) && isset( $_POST['date_completed'] ) ) {
     $date_completed = sanitize_text_field( $_POST['date_completed'] );
 
     // Handle file upload
-    if ( ! function_exists( 'wp_handle_upload' ) ) {
-        require_once( ABSPATH . 'wp-admin/includes/file.php' );
-    }
-    $uploaded_file = $_FILES['training_document'];
-    $upload_overrides = array( 'test_form' => false );
-    $movefile = wp_handle_upload( $uploaded_file, $upload_overrides );
+    if ( isset( $_FILES['training_document'] ) && ! empty( $_FILES['training_document']['name'] ) ) {
+        if ( ! function_exists( 'wp_handle_upload' ) ) {
+            require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        }
 
-    if ( $movefile && ! isset( $movefile['error'] ) ) {
-        $file_url = $movefile['url'];
+        $uploaded_file = $_FILES['training_document'];
+        $upload_overrides = array( 'test_form' => false );
+
+        // Set the upload directory
+        add_filter( 'upload_dir', 'vulpes_lms_custom_upload_directory' );
+
+        $movefile = wp_handle_upload( $uploaded_file, $upload_overrides );
+
+        // Remove the custom upload directory filter after upload
+        remove_filter( 'upload_dir', 'vulpes_lms_custom_upload_directory' );
+
+        if ( $movefile && ! isset( $movefile['error'] ) ) {
+            $file_url = $movefile['url'];
+        } else {
+            $file_url = '';
+        }
     } else {
         $file_url = '';
     }
@@ -312,5 +332,11 @@ jQuery(document).ready(function($) {
         $('.tab-content').hide();
         $($(this).attr('href')).show();
     });
+
+    // Keep the active tab after form submission
+    var hash = window.location.hash;
+    if (hash) {
+        $('.nav-tab[href="' + hash + '"]').click();
+    }
 });
 </script>
