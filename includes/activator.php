@@ -11,6 +11,9 @@ function vulpes_lms_install() {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
 
+// Include the upgrade.php file to use the dbDelta function
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
     // Create groups table
     $table_name = $wpdb->prefix . 'vulpes_lms_groups';
     $sql = "CREATE TABLE $table_name (
@@ -19,7 +22,6 @@ function vulpes_lms_install() {
         manager varchar(255) NOT NULL,
         PRIMARY KEY  (id)
     ) $charset_collate;";
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
 
     // Create courses table
