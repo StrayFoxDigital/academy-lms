@@ -89,17 +89,9 @@ class Vulpes_LMS_Shortcodes {
                             <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->expiry_date ) ) ); ?></td>
                             <td>
                                 <?php if ( $log->uploads ) : ?>
-                                    <a href="<?php echo esc_url( $log->uploads ); ?>" class="elementor-button-link elementor-button elementor-size-sm" target="_blank">
-                                        <span class="elementor-button-content-wrapper">
-                                            <span class="elementor-button-text">View Files</span>
-                                        </span>
-                                    </a>
+                                    <a href="<?php echo esc_url( $log->uploads ); ?>" target="_blank">View Files</a>
                                 <?php else : ?>
-                                    <a href="#" class="elementor-button-link elementor-button elementor-size-sm elementor-button-disabled" aria-disabled="true">
-                                        <span class="elementor-button-content-wrapper">
-                                            <span class="elementor-button-text">No Files</span>
-                                        </span>
-                                    </a>
+                                    <span>No Files</span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -151,12 +143,6 @@ class Vulpes_LMS_Shortcodes {
         <?php
         return ob_get_clean();
     }
-
-    // 1-20: Beginner – Basic understanding, requires significant guidance.
-    // 21-40: Novice – Some knowledge, limited practical application.
-    // 41-60: Competent – Good understanding, can apply concepts with some assistance.
-    // 61-80: Proficient – Strong understanding, capable of independent work.
-    // 81-100: Expert – Comprehensive knowledge, can teach and lead others.
 
     private function get_level_from_score( $score ) {
         if ( $score >= 1 && $score <= 20 ) {
@@ -282,6 +268,7 @@ class Vulpes_LMS_Shortcodes {
                         <th>Date Completed</th>
                         <th>Expiry Date</th>
                         <th>Status</th>
+                        <th>View Files</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -304,6 +291,13 @@ class Vulpes_LMS_Shortcodes {
                             <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->date_completed ) ) ); ?></td>
                             <td><?php echo esc_html( date( 'd-m-Y', strtotime( $log->expiry_date ) ) ); ?></td>
                             <td><?php echo esc_html( $status ); ?></td>
+                            <td>
+                                <?php if ( $log->uploads ) : ?>
+                                    <a href="<?php echo esc_url( $log->uploads ); ?>" target="_blank">View Files</a>
+                                <?php else : ?>
+                                    <span>No Files</span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -347,7 +341,7 @@ class Vulpes_LMS_Shortcodes {
                             </td>
                             <td><?php echo esc_html( count( get_users( array( 'meta_key' => 'group', 'meta_value' => $group->group_name ) ) ) ); ?></td>
                             <td>
-                                <a href="#" class="button">Manage</a>
+                                <a href="#">Manage</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -401,7 +395,7 @@ class Vulpes_LMS_Shortcodes {
                             </td>
                             <td><?php echo esc_html( get_user_meta( $user->ID, 'group', true ) ); ?></td>
                             <td>
-                                <a href="#" class="button">Manage</a>
+                                <a href="#">Manage</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
