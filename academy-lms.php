@@ -23,6 +23,7 @@ require_once VULPES_LMS_PATH . 'includes/roles.php';
 require_once VULPES_LMS_PATH . 'includes/shortcodes.php';
 require_once VULPES_LMS_PATH . 'includes/functions.php';
 require_once VULPES_LMS_PATH . 'includes/activator.php'; // Include the activator file
+require_once VULPES_LMS_PATH . 'includes/email-notifications.php'; // Include the email notifications file
 
 // Initialize the plugin
 function vulpes_lms_init() {
