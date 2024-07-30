@@ -142,13 +142,13 @@ if ( isset( $_POST['enroll_course_id'] ) ) {
     }
 }
 
-// Handle form submission for enrolling in a subject group
-if ( isset( $_POST['enroll_subject_group_id'] ) ) {
-    $subject_group_id = intval( $_POST['enroll_subject_group_id'] );
-    $subject_group = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_subject_groups WHERE id = %d", $subject_group_id ) );
+// Handle form submission for enrolling in a learning path
+if ( isset( $_POST['enroll_learning_path_id'] ) ) {
+    $learning_path_id = intval( $_POST['enroll_learning_path_id'] );
+    $learning_path = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_learning_paths WHERE id = %d", $learning_path_id ) );
 
-    if ( $subject_group ) {
-        $courses = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_courses WHERE subject_group = %s", $subject_group->subject_group_name ) );
+    if ( $learning_path ) {
+        $courses = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_courses WHERE learning_path = %s", $learning_path->learning_path_name ) );
 
         foreach ( $courses as $course ) {
             $wpdb->insert(
@@ -167,7 +167,7 @@ if ( isset( $_POST['enroll_subject_group_id'] ) ) {
             do_action('vulpes_lms_course_enrolled', $user_id, $course->course_name);
         }
 
-        echo '<div class="updated"><p>Subject group enrolled successfully.</p></div>';
+        echo '<div class="updated"><p>Learning path enrolled successfully.</p></div>';
     }
 }
 
@@ -188,8 +188,8 @@ $managers = get_users( array(
 // Fetch all courses for the course dropdown
 $courses = $wpdb->get_results( "SELECT id, course_name FROM {$wpdb->prefix}vulpes_lms_courses" );
 
-// Fetch all subject groups for the subject group dropdown
-$subject_groups = $wpdb->get_results( "SELECT id, subject_group_name FROM {$wpdb->prefix}vulpes_lms_subject_groups" );
+// Fetch all learning paths for the learning path dropdown
+$learning_paths = $wpdb->get_results( "SELECT id, learning_path_name FROM {$wpdb->prefix}vulpes_lms_learning_paths" );
 
 // Fetch employee's training records
 $training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_training_log WHERE employee_id = %d ORDER BY date_completed DESC", $user_id ) );
@@ -351,16 +351,16 @@ $course_enrollments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb-
             <?php submit_button( 'Enroll' ); ?>
         </form>
 
-        <h2>Enroll in a Subject Group</h2>
+        <h2>Enroll in a Learning Path</h2>
         <form method="post" action="">
             <table class="form-table">
                 <tr valign="top">
-                    <th scope="row"><label for="enroll_subject_group_id">Subject Group</label></th>
+                    <th scope="row"><label for="enroll_learning_path_id">Learning Path</label></th>
                     <td>
-                        <select id="enroll_subject_group_id" name="enroll_subject_group_id" required>
-                            <option value="">Select a Subject Group</option>
-                            <?php foreach ( $subject_groups as $subject_group ) : ?>
-                                <option value="<?php echo esc_attr( $subject_group->id ); ?>"><?php echo esc_html( $subject_group->subject_group_name ); ?></option>
+                        <select id="enroll_learning_path_id" name="enroll_learning_path_id" required>
+                            <option value="">Select a Learning Path</option>
+                            <?php foreach ( $learning_paths as $learning_path ) : ?>
+                                <option value="<?php echo esc_attr( $learning_path->id ); ?>"><?php echo esc_html( $learning_path->learning_path_name ); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </td>

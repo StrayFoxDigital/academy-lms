@@ -32,8 +32,9 @@ function vulpes_lms_install() {
         course_description text NOT NULL,
         expiry_duration int NOT NULL,
         training_provider varchar(255),
-        subject_group varchar(255),
+        learning_path varchar(255),
         competency_score int,
+        course_link varchar(255),
         PRIMARY KEY  (id)
     ) $charset_collate;";
     dbDelta( $sql );
@@ -52,11 +53,11 @@ function vulpes_lms_install() {
     ) $charset_collate;";
     dbDelta( $sql );
 
-    // Create subject groups table
-    $table_name = $wpdb->prefix . 'vulpes_lms_subject_groups';
+    // Create learning paths table
+    $table_name = $wpdb->prefix . 'vulpes_lms_learning_paths';
     $sql = "CREATE TABLE $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
-        subject_group_name varchar(255) NOT NULL,
+        learning_path_name varchar(255) NOT NULL,
         description text,
         total_achievable_score int DEFAULT 0,
         PRIMARY KEY  (id)

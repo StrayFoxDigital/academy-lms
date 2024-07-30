@@ -8,13 +8,14 @@ global $wpdb;
 $table_name = $wpdb->prefix . 'vulpes_lms_courses';
 
 // Handle form submission for adding a course
-if ( isset( $_POST['course_name'] ) && isset( $_POST['course_description'] ) && isset( $_POST['expiry_duration'] ) && isset( $_POST['training_provider'] ) && isset( $_POST['subject_group'] ) && isset( $_POST['competency_score'] ) ) {
+if ( isset( $_POST['course_name'] ) && isset( $_POST['course_description'] ) && isset( $_POST['expiry_duration'] ) && isset( $_POST['training_provider'] ) && isset( $_POST['learning_path'] ) && isset( $_POST['competency_score'] ) && isset( $_POST['course_url'] ) ) {
     $course_name = sanitize_text_field( $_POST['course_name'] );
     $course_description = sanitize_textarea_field( $_POST['course_description'] );
     $expiry_duration = intval( $_POST['expiry_duration'] );
     $training_provider = sanitize_text_field( $_POST['training_provider'] );
-    $subject_group = sanitize_text_field( $_POST['subject_group'] );
+    $learning_path = sanitize_text_field( $_POST['learning_path'] );
     $competency_score = intval( $_POST['competency_score'] );
+    $course_url = esc_url_raw( $_POST['course_url'] );
 
     $wpdb->insert(
         $table_name,
@@ -23,8 +24,9 @@ if ( isset( $_POST['course_name'] ) && isset( $_POST['course_description'] ) && 
             'course_description' => $course_description,
             'expiry_duration' => $expiry_duration,
             'training_provider' => $training_provider,
-            'subject_group' => $subject_group,
+            'learning_path' => $learning_path,
             'competency_score' => $competency_score,
+            'course_url' => $course_url,
         )
     );
 
@@ -41,8 +43,8 @@ if ( isset( $_GET['action'] ) && $_GET['action'] == 'delete' && isset( $_GET['co
 // Fetch all courses
 $courses = $wpdb->get_results( "SELECT * FROM $table_name" );
 
-// Fetch all subject groups
-$subject_groups = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}vulpes_lms_subject_groups" );
+// Fetch all learning paths
+$learning_paths = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}vulpes_lms_learning_paths" );
 
 ?>
 
@@ -60,7 +62,7 @@ $subject_groups = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}vulpes_lms_s
                 <tr>
                     <th id="columnname" class="manage-column column-columnname" scope="col">Course Name</th>
                     <th id="columnname" class="manage-column column-columnname" scope="col">Training Provider</th>
-                    <th id="columnname" class="manage-column column-columnname" scope="col">Subject Group</th>
+                    <th id="columnname" class="manage-column column-columnname" scope="col">Learning Path</th>
                     <th id="columnname" class="manage-column column-columnname" scope="col">Competency Score</th>
                     <th id="columnname" class="manage-column column-columnname" scope="col">Assigned Employees</th>
                     <th id="columnname" class="manage-column column-columnname" scope="col">Actions</th>
@@ -72,7 +74,7 @@ $subject_groups = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}vulpes_lms_s
                         <tr>
                             <td><?php echo esc_html( $course->course_name ); ?></td>
                             <td><?php echo esc_html( $course->training_provider ); ?></td>
-                            <td><?php echo esc_html( $course->subject_group ); ?></td>
+                            <td><?php echo esc_html( $course->learning_path ); ?></td>
                             <td><?php echo esc_html( $course->competency_score ); ?></td>
                             <td><?php echo esc_html( count( get_users( array( 'meta_key' => 'course', 'meta_value' => $course->course_name ) ) ) ); ?></td>
                             <td>
@@ -110,12 +112,12 @@ $subject_groups = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}vulpes_lms_s
                     <td><input type="text" id="training_provider" name="training_provider" class="regular-text" required /></td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="subject_group">Subject Group</label></th>
+                    <th scope="row"><label for="learning_path">Learning Path</label></th>
                     <td>
-                        <select id="subject_group" name="subject_group" required>
-                            <option value="">Select a Subject Group</option>
-                            <?php foreach ( $subject_groups as $subject_group ) : ?>
-                                <option value="<?php echo esc_attr( $subject_group->subject_group_name ); ?>"><?php echo esc_html( $subject_group->subject_group_name ); ?></option>
+                        <select id="learning_path" name="learning_path" required>
+                            <option value="">Select a Learning Path</option>
+                            <?php foreach ( $learning_paths as $learning_path ) : ?>
+                                <option value="<?php echo esc_attr( $learning_path->learning_path_name ); ?>"><?php echo esc_html( $learning_path->learning_path_name ); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </td>
@@ -123,6 +125,10 @@ $subject_groups = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}vulpes_lms_s
                 <tr valign="top">
                     <th scope="row"><label for="competency_score">Competency Score</label></th>
                     <td><input type="number" id="competency_score" name="competency_score" class="regular-text" required /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="course_url">Course URL</label></th>
+                    <td><input type="url" id="course_url" name="course_url" class="regular-text" /></td>
                 </tr>
             </table>
             <?php submit_button( 'Add Course' ); ?>

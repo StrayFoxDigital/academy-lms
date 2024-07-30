@@ -10,7 +10,7 @@ class Vulpes_LMS_Shortcodes {
         add_shortcode( 'vulpes_user_profile', array( $this, 'user_profile_shortcode' ) );
         add_shortcode( 'vulpes_user_training_log', array( $this, 'user_training_log_shortcode' ) );
         add_shortcode( 'vulpes_user_enrolled_courses', array( $this, 'user_enrolled_courses_shortcode' ) );
-        add_shortcode( 'vulpes_user_subject_scores', array( $this, 'user_subject_scores_shortcode' ) );
+        add_shortcode( 'vulpes_user_learning_path_scores', array( $this, 'user_learning_path_scores_shortcode' ) );
         add_shortcode( 'vulpes_full_training_log', array( $this, 'full_training_log_shortcode' ) );
         add_shortcode( 'vulpes_all_groups', array( $this, 'all_groups_shortcode' ) );
         add_shortcode( 'vulpes_my_team', array( $this, 'my_team_shortcode' ) ); // New shortcode
@@ -160,30 +160,30 @@ class Vulpes_LMS_Shortcodes {
         }
     }
 
-    public function user_subject_scores_shortcode() {
+    public function user_learning_path_scores_shortcode() {
         if ( ! is_user_logged_in() ) {
-            return '<p>You need to be logged in to view your subject scores.</p>';
+            return '<p>You need to be logged in to view your learning path scores.</p>';
         }
 
         global $wpdb;
         $user_id = get_current_user_id();
-        $subjects_table = $wpdb->prefix . 'vulpes_lms_subject_groups';
+        $learning_paths_table = $wpdb->prefix . 'vulpes_lms_learning_paths';
         $courses_table = $wpdb->prefix . 'vulpes_lms_courses';
         $training_log_table = $wpdb->prefix . 'vulpes_lms_training_log';
         $course_assignments_table = $wpdb->prefix . 'vulpes_lms_course_assignments';
 
-        // Fetch all subject groups
-        $subject_groups = $wpdb->get_results( "SELECT * FROM $subjects_table" );
+        // Fetch all learning paths
+        $learning_paths = $wpdb->get_results( "SELECT * FROM $learning_paths_table" );
 
-        // Array to store subject scores
-        $subject_scores = [];
+        // Array to store learning path scores
+        $learning_path_scores = [];
 
-        // Calculate scores for each subject group
-        foreach ( $subject_groups as $subject_group ) {
-            $subject_name = $subject_group->subject_group_name;
+        // Calculate scores for each learning path
+        foreach ( $learning_paths as $learning_path ) {
+            $learning_path_name = $learning_path->learning_path_name;
 
-            // Get all courses in this subject group
-            $courses = $wpdb->get_results( $wpdb->prepare( "SELECT id, competency_score FROM $courses_table WHERE subject_group = %s", $subject_name ) );
+            // Get all courses in this learning path
+            $courses = $wpdb->get_results( $wpdb->prepare( "SELECT id, competency_score FROM $courses_table WHERE learning_path = %s", $learning_path_name ) );
 
             $total_score = 0;
             $total_achievable_score = 0;
@@ -202,12 +202,12 @@ class Vulpes_LMS_Shortcodes {
                 $total_achievable_score += $competency_score;
             }
 
-            // Check if the user is enrolled in any courses of this subject group
-            $enrolled_courses = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $course_assignments_table WHERE employee_id = %d AND course_id IN (SELECT id FROM $courses_table WHERE subject_group = %s)", $user_id, $subject_name ) );
+            // Check if the user is enrolled in any courses of this learning path
+            $enrolled_courses = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $course_assignments_table WHERE employee_id = %d AND course_id IN (SELECT id FROM $courses_table WHERE learning_path = %s)", $user_id, $learning_path_name ) );
 
             if ( $total_score > 0 || ! empty( $enrolled_courses ) ) {
-                $subject_scores[] = array(
-                    'subject_name' => $subject_name,
+                $learning_path_scores[] = array(
+                    'learning_path_name' => $learning_path_name,
                     'total_score' => $total_score,
                     'total_achievable_score' => $total_achievable_score,
                     'level' => $this->get_level_from_score( $total_score )
@@ -221,18 +221,18 @@ class Vulpes_LMS_Shortcodes {
             <table>
                 <thead>
                     <tr>
-                        <th>Subject Group</th>
+                        <th>Learning Path</th>
                         <th>Score</th>
                         <th>Level</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if ( ! empty( $subject_scores ) ) : ?>
-                        <?php foreach ( $subject_scores as $subject_score ) : ?>
+                    <?php if ( ! empty( $learning_path_scores ) ) : ?>
+                        <?php foreach ( $learning_path_scores as $learning_path_score ) : ?>
                             <tr>
-                                <td><?php echo esc_html( $subject_score['subject_name'] ); ?></td>
-                                <td><?php echo esc_html( $subject_score['total_score'] . ' / ' . $subject_score['total_achievable_score'] ); ?></td>
-                                <td><?php echo esc_html( $subject_score['level'] ); ?></td>
+                                <td><?php echo esc_html( $learning_path_score['learning_path_name'] ); ?></td>
+                                <td><?php echo esc_html( $learning_path_score['total_score'] . ' / ' . $learning_path_score['total_achievable_score'] ); ?></td>
+                                <td><?php echo esc_html( $learning_path_score['level'] ); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else : ?>
@@ -313,7 +313,7 @@ class Vulpes_LMS_Shortcodes {
 
         $groups = $wpdb->get_results( "SELECT * FROM $table_name" );
 
-        if ( empty( $groups ) ) {
+        if ( empty( $groups) ) {
             return '<p>No groups found.</p>';
         }
 
