@@ -19,6 +19,8 @@ class Vulpes_LMS_Shortcodes {
         require_once VULPES_LMS_PATH . 'includes/shortcodes/full_training_log_shortcode.php';
         require_once VULPES_LMS_PATH . 'includes/shortcodes/all_groups_shortcode.php';
         require_once VULPES_LMS_PATH . 'includes/shortcodes/my_team_shortcode.php';
+        require_once VULPES_LMS_PATH . 'includes/shortcodes/manage_group_shortcode.php';
+   		require_once VULPES_LMS_PATH . 'includes/shortcodes/add_new_group.php';// New Shortcode
     }
 
     public function enqueue_styles() {
@@ -27,3 +29,4 @@ class Vulpes_LMS_Shortcodes {
 }
 
 new Vulpes_LMS_Shortcodes();
+?>

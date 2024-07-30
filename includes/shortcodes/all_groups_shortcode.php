@@ -16,6 +16,9 @@ function vulpes_all_groups_shortcode() {
         return '<p>No groups found.</p>';
     }
 
+    // Define the URL of the manage-group page
+    $manage_group_url = site_url('/manage-group/');
+
     ob_start();
     ?>
     <div class="vulpes-lms-shortcodes">
@@ -40,7 +43,7 @@ function vulpes_all_groups_shortcode() {
                         </td>
                         <td><?php echo esc_html( count( get_users( array( 'meta_key' => 'group', 'meta_value' => $group->group_name ) ) ) ); ?></td>
                         <td>
-                            <a href="#">Manage</a>
+                            <a href="<?php echo esc_url( add_query_arg( 'group_id', $group->id, $manage_group_url ) ); ?>">Manage</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -52,3 +55,5 @@ function vulpes_all_groups_shortcode() {
 }
 
 add_shortcode( 'vulpes_all_groups', 'vulpes_all_groups_shortcode' );
+
+?>
