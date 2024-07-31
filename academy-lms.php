@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Define plugin path
 define( 'VULPES_LMS_PATH', plugin_dir_path( __FILE__ ) );
+define( 'VULPES_LMS_VERSION', '0.1.0-alpha' );
 
 // Include necessary files
 require_once VULPES_LMS_PATH . 'includes/class-vulpes-lms.php';
@@ -24,10 +25,16 @@ require_once VULPES_LMS_PATH . 'includes/shortcodes.php';
 require_once VULPES_LMS_PATH . 'includes/functions.php';
 require_once VULPES_LMS_PATH . 'includes/activator.php'; // Include the activator file
 require_once VULPES_LMS_PATH . 'includes/email-notifications.php'; // Include the email notifications file
+require_once VULPES_LMS_PATH . 'includes/updater.php'; // Include the updater class
 
 // Initialize the plugin
 function vulpes_lms_init() {
     $vulpes_lms = new Vulpes_LMS();
+    $updater = new Vulpes_LMS_Updater( __FILE__ );
+    $updater->set_username( 'StrayFoxDigital' );
+    $updater->set_repository( 'academy-lms' );
+    $updater->authorize( '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' );
+    $updater->initialize();
 }
 add_action( 'plugins_loaded', 'vulpes_lms_init' );
 
