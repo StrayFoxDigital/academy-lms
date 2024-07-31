@@ -20,7 +20,9 @@ class Vulpes_LMS_Shortcodes {
         require_once VULPES_LMS_PATH . 'includes/shortcodes/all_groups_shortcode.php';
         require_once VULPES_LMS_PATH . 'includes/shortcodes/my_team_shortcode.php';
         require_once VULPES_LMS_PATH . 'includes/shortcodes/manage_group_shortcode.php';
-   		require_once VULPES_LMS_PATH . 'includes/shortcodes/add_new_group.php';// New Shortcode
+   		require_once VULPES_LMS_PATH . 'includes/shortcodes/add_new_group.php';
+        require_once VULPES_LMS_PATH . 'includes/shortcodes/all_users_shortcode.php';
+        require_once VULPES_LMS_PATH . 'includes/shortcodes/manage_user_shortcode.php';
     }
 
     public function enqueue_styles() {

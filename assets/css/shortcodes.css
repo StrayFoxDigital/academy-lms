@@ -6,7 +6,7 @@
 .vulpes-lms-shortcodes table th,
 .vulpes-lms-shortcodes table td {
     text-align: left;
-	padding: 8px;
+    padding: 8px;
     border: none; /* Remove borders */
 }
 
@@ -14,8 +14,11 @@
     text-align: center;
 }
 
-.vulpes-user-profile .user-avatar img {
+.vulpes-user-profile .user-avatar img,
+.vulpes-lms-shortcodes .user-avatar img {
     border-radius: 50%;
+    width: 150px; /* Adjust width to make the avatar bigger */
+    height: 150px; /* Adjust height to make the avatar bigger */
 }
 
 .vulpes-user-profile h2 {
@@ -37,4 +40,14 @@
 .vulpes-user-profile .user-info p {
     margin: 10px 0;
     font-size: 16px;
+}
+
+.vulpes-lms-shortcodes .wrap {
+    display: flex;
+    justify-content: space-between;
+}
+
+.vulpes-lms-shortcodes .user-avatar {
+    text-align: center;
+    margin-bottom: 20px;
 }
