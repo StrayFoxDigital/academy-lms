@@ -67,9 +67,9 @@ function vulpes_user_learning_path_scores_shortcode() {
         <table>
             <thead>
                 <tr>
-                    <th>Learning Path</th>
-                    <th>Score</th>
-                    <th>Level</th>
+                    <th style="width: 60%;">Learning Path</th>
+                    <th style="width: 25%;">Progress</th>
+                    <th style="width: 15%;">Level</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,7 +77,14 @@ function vulpes_user_learning_path_scores_shortcode() {
                     <?php foreach ( $learning_path_scores as $learning_path_score ) : ?>
                         <tr>
                             <td><?php echo esc_html( $learning_path_score['learning_path_name'] ); ?></td>
-                            <td><?php echo esc_html( $learning_path_score['total_score'] . ' / ' . $learning_path_score['total_achievable_score'] ); ?></td>
+                            <td>
+                                <div class="progress-container">
+                                    <span class="progress-label"><?php echo round( ( $learning_path_score['total_score'] / $learning_path_score['total_achievable_score'] ) * 100 ); ?>%</span>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: <?php echo ( $learning_path_score['total_score'] / $learning_path_score['total_achievable_score'] ) * 100; ?>%;"></div>
+                                    </div>
+                                </div>
+                            </td>
                             <td><?php echo esc_html( $learning_path_score['level'] ); ?></td>
                         </tr>
                     <?php endforeach; ?>

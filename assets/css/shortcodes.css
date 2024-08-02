@@ -51,3 +51,29 @@
     text-align: center;
     margin-bottom: 20px;
 }
+
+.vulpes-lms-shortcodes .progress-container {
+    display: flex;
+    align-items: center;
+}
+
+.vulpes-lms-shortcodes .progress-label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.vulpes-lms-shortcodes .progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 20px;
+    flex-grow: 1;
+}
+
+.vulpes-lms-shortcodes .progress {
+    background-color: #4caf50; /* Green color */
+    height: 100%;
+    text-align: center;
+    color: white;
+    line-height: 20px; /* Align text vertically */
+}
