@@ -37,13 +37,13 @@ function vulpes_user_enrolled_courses_shortcode() {
             <tbody>
                 <?php foreach ( $enrolled_courses as $course ) : ?>
                     <?php
-                    $course_link = $wpdb->get_var( $wpdb->prepare( "SELECT course_link FROM $courses_table_name WHERE id = %d", $course->course_id ) );
+                    $course_url = $wpdb->get_var( $wpdb->prepare( "SELECT course_url FROM $courses_table_name WHERE id = %d", $course->course_id ) );
                     ?>
                     <tr>
                         <td><?php echo esc_html( $course->course_name ); ?></td>
                         <td><?php echo esc_html( date( 'd-m-Y', strtotime( $course->date_enrolled ) ) ); ?></td>
                         <td><?php echo esc_html( ucfirst( $course->status ) ); ?></td>
-                        <td><?php echo $course_link ? '<a href="' . esc_url( $course_link ) . '" target="_blank">Link</a>' : 'N/A'; ?></td>
+                        <td><?php echo $course_url ? '<a href="' . esc_url( $course_url ) . '" target="_blank">Link</a>' : 'N/A'; ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
