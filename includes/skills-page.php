@@ -11,9 +11,8 @@ $skills_table = $wpdb->prefix . 'vulpes_lms_skills_list';
 if (isset($_POST['skill_name'])) {
     $skill_name = sanitize_text_field($_POST['skill_name']);
     $parent_skill = sanitize_text_field($_POST['parent_skill']);
+    $is_parent = isset($_POST['is_parent']) ? 'true' : 'false';
     $description = sanitize_textarea_field($_POST['description']);
-
-    $is_parent = 'false';
 
     $wpdb->insert(
         $skills_table,
@@ -25,14 +24,6 @@ if (isset($_POST['skill_name'])) {
         )
     );
 
-    if (!empty($parent_skill)) {
-        $wpdb->update(
-            $skills_table,
-            array('is_parent' => 'true'),
-            array('skill_name' => $parent_skill)
-        );
-    }
-
     echo '<div class="updated"><p>Skill added successfully.</p></div>';
 }
 
@@ -42,21 +33,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['skill_
     $skill = $wpdb->get_row($wpdb->prepare("SELECT * FROM $skills_table WHERE id = %d", $skill_id));
 
     if ($skill) {
-        // Check if the skill is a child and if its parent has other children
-        if (!empty($skill->parent_skill)) {
-            $parent_skill = $skill->parent_skill;
-            $siblings = $wpdb->get_results($wpdb->prepare("SELECT * FROM $skills_table WHERE parent_skill = %s AND id != %d", $parent_skill, $skill_id));
-
-            if (empty($siblings)) {
-                $wpdb->update(
-                    $skills_table,
-                    array('is_parent' => 'false'),
-                    array('skill_name' => $parent_skill)
-                );
-            }
-        }
-
-        // Delete the skill
         $wpdb->delete($skills_table, array('id' => $skill_id));
         echo '<div class="updated"><p>Skill deleted successfully.</p></div>';
     } else {
@@ -72,11 +48,11 @@ $skills = $wpdb->get_results("SELECT * FROM $skills_table");
 <div class="wrap">
     <h1>Manage Skills</h1>
     <h2 class="nav-tab-wrapper">
-        <a href="#skills-list" class="nav-tab nav-tab-active">Skills List</a>
+        <a href="#skills" class="nav-tab nav-tab-active">Skills List</a>
         <a href="#add-new" class="nav-tab">Add New</a>
     </h2>
 
-    <div id="skills-list" class="tab-content">
+    <div id="skills" class="tab-content">
         <h2>Existing Skills</h2>
         <table class="widefat fixed" cellspacing="0">
             <thead>
@@ -92,7 +68,7 @@ $skills = $wpdb->get_results("SELECT * FROM $skills_table");
                     <?php foreach ($skills as $skill) : ?>
                         <tr>
                             <td><?php echo esc_html($skill->skill_name); ?></td>
-                            <td><?php echo esc_html($skill->parent_skill); ?></td>
+                            <td><?php echo esc_html($skill->parent_skill ? $skill->parent_skill : 'None'); ?></td>
                             <td><?php echo esc_html($skill->description); ?></td>
                             <td>
                                 <a href="<?php echo admin_url('admin.php?page=vulpes-lms-manage-skill&skill_id=' . $skill->id); ?>" class="button">Manage</a>
@@ -110,7 +86,6 @@ $skills = $wpdb->get_results("SELECT * FROM $skills_table");
     </div>
 
     <div id="add-new" class="tab-content" style="display: none;">
-        <h2>Add New Skill</h2>
         <form method="post" action="">
             <table class="form-table">
                 <tr valign="top">
@@ -123,9 +98,18 @@ $skills = $wpdb->get_results("SELECT * FROM $skills_table");
                         <select id="parent_skill" name="parent_skill">
                             <option value="">None</option>
                             <?php foreach ($skills as $skill) : ?>
-                                <option value="<?php echo esc_attr($skill->skill_name); ?>"><?php echo esc_html($skill->skill_name); ?></option>
+                                <?php if ($skill->is_parent == 'true') : ?>
+                                    <option value="<?php echo esc_attr($skill->skill_name); ?>"><?php echo esc_html($skill->skill_name); ?></option>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         </select>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="is_parent">Is Parent</label></th>
+                    <td>
+                        <input type="checkbox" id="is_parent" name="is_parent" value="true" />
+                        <label for="is_parent">Check this if the skill is a parent skill</label>
                     </td>
                 </tr>
                 <tr valign="top">
@@ -146,6 +130,14 @@ jQuery(document).ready(function($) {
         $(this).addClass('nav-tab-active');
         $('.tab-content').hide();
         $($(this).attr('href')).show();
+    });
+
+    $('#is_parent').change(function() {
+        if ($(this).is(':checked')) {
+            $('#parent_skill').prop('disabled', true);
+        } else {
+            $('#parent_skill').prop('disabled', false);
+        }
     });
 
     // Keep the active tab after form submission
