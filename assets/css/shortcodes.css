@@ -24,6 +24,7 @@
 .vulpes-user-profile h2 {
     margin: 0;
     font-size: 24px;
+    padding-bottom: 10px; /* Add padding below the avatar */
 }
 
 .vulpes-user-profile h4 {
@@ -76,4 +77,33 @@
     text-align: center;
     color: white;
     line-height: 20px; /* Align text vertically */
+}
+
+.vulpes-lms-shortcodes .filters {
+    margin-bottom: 20px;
+}
+
+.vulpes-lms-shortcodes .filter-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.vulpes-lms-shortcodes input[type="text"],
+.vulpes-lms-shortcodes input[type="date"] {
+    width: 48%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.vulpes-lms-shortcodes .clear-filters {
+    display: inline-block;
+    margin-top: 10px;
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.vulpes-lms-shortcodes .clear-filters:hover {
+    text-decoration: underline;
 }

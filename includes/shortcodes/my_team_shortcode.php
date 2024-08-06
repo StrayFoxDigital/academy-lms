@@ -25,7 +25,9 @@ function vulpes_my_team_shortcode() {
     ob_start();
     ?>
     <div class="vulpes-lms-shortcodes">
-        <table>
+        <input type="text" id="team-search" placeholder="Search by Display Name" onkeyup="filterTeam()" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+        <table id="team-table">
             <thead>
                 <tr>
                     <th>Display Name</th>
@@ -56,8 +58,30 @@ function vulpes_my_team_shortcode() {
             </tbody>
         </table>
     </div>
+    <script>
+    function filterTeam() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("team-search");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("team-table");
+        tr = table.getElementsByTagName("tr");
+        for (i = 1; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) === 0) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }       
+        }
+    }
+    </script>
     <?php
     return ob_get_clean();
 }
 
 add_shortcode( 'vulpes_my_team', 'vulpes_my_team_shortcode' );
+
+?>

@@ -22,7 +22,9 @@ function vulpes_all_groups_shortcode() {
     ob_start();
     ?>
     <div class="vulpes-lms-shortcodes">
-        <table>
+        <input type="text" id="group-search" placeholder="Search by Group Name" onkeyup="filterGroups()" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+        <table id="group-table">
             <thead>
                 <tr>
                     <th>Group Name</th>
@@ -50,6 +52,26 @@ function vulpes_all_groups_shortcode() {
             </tbody>
         </table>
     </div>
+    <script>
+    function filterGroups() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("group-search");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("group-table");
+        tr = table.getElementsByTagName("tr");
+        for (i = 1; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) === 0) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }       
+        }
+    }
+    </script>
     <?php
     return ob_get_clean();
 }

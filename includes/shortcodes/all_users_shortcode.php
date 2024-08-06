@@ -22,7 +22,9 @@ function vulpes_all_users_shortcode() {
     ob_start();
     ?>
     <div class="vulpes-lms-shortcodes">
-        <table>
+        <input type="text" id="user-search" placeholder="Search by Display Name" onkeyup="filterUsers()" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+        <table id="user-table">
             <thead>
                 <tr>
                     <th>Display Name</th>
@@ -51,6 +53,26 @@ function vulpes_all_users_shortcode() {
             </tbody>
         </table>
     </div>
+    <script>
+    function filterUsers() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("user-search");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("user-table");
+        tr = table.getElementsByTagName("tr");
+        for (i = 1; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) === 0) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }       
+        }
+    }
+    </script>
     <?php
     return ob_get_clean();
 }
