@@ -83,9 +83,9 @@ function vulpes_lms_install() {
     $sql = "CREATE TABLE $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         skill_name varchar(255) NOT NULL,
-        parent varchar(255) DEFAULT '',
-        is_parent varchar(5) NOT NULL DEFAULT 'false',
-        description text,
+        parent_skill varchar(255) NOT NULL,
+        is_parent varchar(5) NOT NULL,
+        description text DEFAULT NULL,
         PRIMARY KEY  (id)
     ) $charset_collate;";
     dbDelta( $sql );
