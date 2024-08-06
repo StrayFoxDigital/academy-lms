@@ -25,24 +25,7 @@ Vulpes LMS is a Learning Management System (LMS) plugin for WordPress. This plug
 ### User Profile
 
 Display the logged-in user's profile information.
-
-```shortcode
-[academy_user_profile]
-```
-
-### User Training Log
-Display the logged-in user's training log.
-
-```shortcode
-[academy_user_training_log]
-```
-
-### User Enrolled Courses
-Display the logged-in user's enrolled courses.
-
-```shortcode
-[vulpes_user_enrolled_courses]
-```
+See [shortcodes.md](https://github.com/StrayFoxDigital/academy-lms/blob/dev/shortcodes.md) for details of available shortcodes.
 
 ## Admin Pages
 
