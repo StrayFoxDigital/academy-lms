@@ -65,7 +65,14 @@ Add and manage employees. Assign employees to groups and log their training reco
 Create and manage employee groups. Assign employees to groups and set group managers.
 
 ### Reports
-Placeholder for future reporting features.
+Placeholder for future reporting features. Add new skills to the system. 
+
+### Skills Management
+Manage and track employee skills.
+- Define whether a skill is a parent skill and assign parent skills to child skills. 
+- Add descriptions for better clarity. 
+- View all skills within the system, including their parent skills and descriptions. 
+- Manage existing skills by editing or deleting them.
 
 ## Additional Features
 
