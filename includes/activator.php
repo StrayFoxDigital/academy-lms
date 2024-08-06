@@ -11,7 +11,7 @@ function vulpes_lms_install() {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
 
-// Include the upgrade.php file to use the dbDelta function
+    // Include the upgrade.php file to use the dbDelta function
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
     // Create groups table
@@ -74,6 +74,44 @@ function vulpes_lms_install() {
         course_name varchar(255) NOT NULL,
         date_enrolled date NOT NULL,
         status varchar(255) NOT NULL DEFAULT 'enrolled',
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+    dbDelta( $sql );
+
+    // Create skills list table
+    $table_name = $wpdb->prefix . 'vulpes_lms_skills_list';
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        skill_name varchar(255) NOT NULL,
+        parent varchar(255) DEFAULT '',
+        is_parent varchar(5) NOT NULL DEFAULT 'false',
+        description text,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+    dbDelta( $sql );
+
+    // Create skill assignments table
+    $table_name = $wpdb->prefix . 'vulpes_lms_skill_assignments';
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        skill_name varchar(255) NOT NULL,
+        is_parent varchar(5) NOT NULL,
+        employee_id mediumint(9) NOT NULL,
+        level int NOT NULL DEFAULT 0,
+        type varchar(255) NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+    dbDelta( $sql );
+
+    // Create experience table
+    $table_name = $wpdb->prefix . 'vulpes_lms_experience';
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        company varchar(255) NOT NULL,
+        role varchar(255) NOT NULL,
+        date_from date NOT NULL,
+        date_to date,
+        details text,
         PRIMARY KEY  (id)
     ) $charset_collate;";
     dbDelta( $sql );
