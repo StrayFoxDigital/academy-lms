@@ -99,6 +99,7 @@ function vulpes_lms_install() {
         employee_id mediumint(9) NOT NULL,
         level int NOT NULL DEFAULT 0,
         type varchar(255) NOT NULL,
+        parent_skill varchar(255) NOT NULL,
         PRIMARY KEY  (id)
     ) $charset_collate;";
     dbDelta( $sql );

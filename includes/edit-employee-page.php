@@ -197,6 +197,48 @@ $training_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->pref
 // Fetch employee's course enrollments
 $course_enrollments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_course_assignments WHERE employee_id = %d ORDER BY date_enrolled DESC", $user_id ) );
 
+// Handle form submission for assigning skills
+if ( isset( $_POST['skill_id'] ) ) {
+    $skill_id = intval( $_POST['skill_id'] );
+    $skill = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_skills WHERE id = %d", $skill_id ) );
+
+    if ( $skill ) {
+        $wpdb->insert(
+            $wpdb->prefix . 'vulpes_lms_skill_assignments',
+            array(
+                'skill_name' => $skill->skill_name,
+                'is_parent' => $skill->is_parent,
+                'employee_id' => $user_id,
+                'level' => 0,
+                'type' => 'Assigned',
+            )
+        );
+
+        // If the skill is a parent, assign all child skills as well
+        if ( $skill->is_parent === 'yes' ) {
+            $child_skills = $wpdb->get_results( $wpdb->prepare( 
+                "SELECT * FROM {$wpdb->prefix}vulpes_lms_skills WHERE parent_skill = %s", 
+                $skill->skill_name 
+            ) );
+
+            foreach ( $child_skills as $child_skill ) {
+                $wpdb->insert(
+                    $wpdb->prefix . 'vulpes_lms_skill_assignments',
+                    array(
+                        'skill_name' => $child_skill->skill_name,
+                        'is_parent' => $child_skill->is_parent,
+                        'employee_id' => $user_id,
+                        'level' => 0,
+                        'type' => 'Assigned',
+                    )
+                );
+            }
+        }
+
+        echo '<div class="updated"><p>Skill(s) assigned successfully.</p></div>';
+    }
+}
+
 ?>
 
 <div class="wrap">
@@ -206,6 +248,7 @@ $course_enrollments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb-
         <a href="#details" class="nav-tab nav-tab-active">Details</a>
         <a href="#training-records" class="nav-tab">Training Records</a>
         <a href="#enrollment" class="nav-tab">Enrollment</a>
+        <a href="#skills" class="nav-tab">Skills</a> <!-- Added new tab here -->
     </h2>
     
     <div id="details" class="tab-content">
@@ -397,7 +440,209 @@ $course_enrollments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb-
             </tbody>
         </table>
     </div>
+
+<!-- New Skills Tab Content -->
+<div id="skills" class="tab-content" style="display: none;">
+    <h2>Assign Skills</h2>
+    <form method="post" action="">
+        <table class="form-table">
+            <tr valign="top">
+                <th scope="row"><label for="skill_id">Skill</label></th>
+                <td>
+                    <select id="skill_id" name="skill_id" required>
+                        <option value="">Select a Skill</option>
+                        <?php 
+                            // Fetch all skills that are not already assigned to the user
+                            $assigned_skills = $wpdb->get_col( $wpdb->prepare( 
+                                "SELECT skill_name FROM {$wpdb->prefix}vulpes_lms_skill_assignments WHERE employee_id = %d", 
+                                $user_id 
+                            ) );
+
+                            $skills = $wpdb->get_results( "SELECT id, skill_name FROM {$wpdb->prefix}vulpes_lms_skills_list" );
+
+                            foreach ( $skills as $skill ) {
+                                if ( ! in_array( $skill->skill_name, $assigned_skills ) ) {
+                                    echo '<option value="' . esc_attr( $skill->id ) . '">' . esc_html( $skill->skill_name ) . '</option>';
+                                }
+                            }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <?php submit_button( 'Assign Skill' ); ?>
+    </form>
+
+        <h2>Assigned Skills</h2>
+            <form method="post" action="">
+                <table class="widefat fixed" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th id="columnname" class="manage-column column-columnname" scope="col">Skill Name</th>
+                            <th id="columnname" class="manage-column column-columnname" scope="col">Level</th>
+                            <th id="columnname" class="manage-column column-columnname" scope="col">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                            // Fetch all assigned skills, ordered by parent_skill and skill_name
+                            $assigned_skills = $wpdb->get_results( $wpdb->prepare( 
+                                "SELECT * FROM {$wpdb->prefix}vulpes_lms_skill_assignments WHERE employee_id = %d ORDER BY parent_skill ASC, id ASC", 
+                                $user_id 
+                            ) );
+
+                            if ( ! empty( $assigned_skills ) ) :
+                                // First, display parent skills and their children
+                                foreach ( $assigned_skills as $parent_skill ) :
+                                    if ($parent_skill->is_parent === 'true' || empty($parent_skill->parent_skill)) :
+                                        // Calculate the total and earned points for child skills
+                                        $child_total_points = 0;
+                                        $child_earned_points = 0;
+                                        $child_count = 0;
+
+                                        foreach ( $assigned_skills as $child_skill ) {
+                                            if ( $child_skill->parent_skill === $parent_skill->skill_name ) {
+                                                $child_earned_points += $child_skill->level;
+                                                $child_total_points += 6;
+                                                $child_count++;
+                                            }
+                                        }
+
+                                        $parent_level_display = $child_count > 0 ? "$child_earned_points / $child_total_points" : '0 / 0';
+                                        ?>
+                                        <tr style="font-weight: bold;">
+                                            <td><?php echo esc_html( $parent_skill->skill_name ); ?></td>
+                                            <td><?php echo $parent_level_display; ?></td>
+                                            <td><?php echo esc_html( $parent_skill->type ); ?></td>
+                                        </tr>
+
+                                        <?php
+                                        // Display child skills related to this parent skill
+                                        foreach ( $assigned_skills as $child_skill ) :
+                                            if ( $child_skill->parent_skill === $parent_skill->skill_name ) : ?>
+                                                <tr>
+                                                    <td style="padding-left: 20px;">— <?php echo esc_html( $child_skill->skill_name ); ?></td>
+                                                    <td>
+                                                        <input type="number" name="child_skill_levels[<?php echo $child_skill->id; ?>]" value="<?php echo esc_attr( $child_skill->level ); ?>" min="0" max="6" />
+                                                    </td>
+                                                    <td><?php echo esc_html( $child_skill->type ); ?></td>
+                                                </tr>
+                                            <?php endif;
+                                        endforeach;
+
+                                    endif;
+                                endforeach;
+
+                                // Now display the "Standalone" category and its skills
+                                ?>
+                                <tr style="font-weight: bold;">
+                                    <td>Standalone</td>
+                                    <td></td> <!-- No level calculation for Standalone -->
+                                    <td></td>
+                                </tr>
+                                <?php
+
+                                foreach ( $assigned_skills as $skill ) :
+                                    if ($skill->parent_skill === 'Standalone') : ?>
+                                        <tr>
+                                            <td style="padding-left: 20px;">— <?php echo esc_html( $skill->skill_name ); ?></td>
+                                            <td>
+                                                <input type="number" name="child_skill_levels[<?php echo $skill->id; ?>]" value="<?php echo esc_attr( $skill->level ); ?>" min="0" max="6" />
+                                            </td>
+                                            <td><?php echo esc_html( $skill->type ); ?></td>
+                                        </tr>
+                                    <?php endif;
+                                endforeach;
+
+                            else : ?>
+                                <tr>
+                                    <td colspan="3">No skills assigned.</td>
+                                </tr>
+                            <?php endif; ?>
+                    </tbody>
+                </table>
+                <?php submit_button( 'Save Skill Levels' ); ?>
+            </form>
+
+    <?php
+        // Handle form submission for saving skill levels
+        if ( isset( $_POST['child_skill_levels'] ) ) {
+            foreach ( $_POST['child_skill_levels'] as $child_skill_id => $new_level ) {
+                $new_level = intval( $new_level );
+
+                // Update the level in the database
+                $wpdb->update(
+                    $wpdb->prefix . 'vulpes_lms_skill_assignments',
+                    array( 'level' => $new_level ),
+                    array( 'id' => intval( $child_skill_id ) ),
+                    array( '%d' ),
+                    array( '%d' )
+                );
+            }
+
+            echo '<div class="updated"><p>Skill levels updated successfully.</p></div>';
+        }
+    ?>
 </div>
+
+<?php
+// Handle form submission for assigning skills
+if ( isset( $_POST['skill_id'] ) ) {
+    $skill_id = intval( $_POST['skill_id'] );
+
+    // Fetch the selected skill details from the skills list
+    $skill = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}vulpes_lms_skills_list WHERE id = %d", $skill_id ) );
+
+    if ( $skill ) {
+        // Insert the selected skill into the skill assignments table
+        $wpdb->insert(
+            $wpdb->prefix . 'vulpes_lms_skill_assignments',
+            array(
+                'skill_name'   => $skill->skill_name,
+                'is_parent'    => $skill->is_parent,
+                'parent_skill' => $skill->parent_skill,  // Insert parent_skill
+                'employee_id'  => $user_id,
+                'level'        => 0,
+                'type'         => 'Assigned',
+            )
+        );
+
+        // If the skill is a parent, assign all child skills as well
+        if ( $skill->is_parent === 'true' ) {
+            // Fetch all child skills where the parent_skill matches the current skill's skill_name
+            $child_skills = $wpdb->get_results( $wpdb->prepare( 
+                "SELECT * FROM {$wpdb->prefix}vulpes_lms_skills_list WHERE parent_skill = %s", 
+                $skill->skill_name 
+            ) );
+
+            foreach ( $child_skills as $child_skill ) {
+                // Ensure the child skill isn't already assigned to avoid duplicates
+                $already_assigned = $wpdb->get_var( $wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$wpdb->prefix}vulpes_lms_skill_assignments WHERE skill_name = %s AND employee_id = %d",
+                    $child_skill->skill_name,
+                    $user_id
+                ));
+
+                if ( ! $already_assigned ) {
+                    $wpdb->insert(
+                        $wpdb->prefix . 'vulpes_lms_skill_assignments',
+                        array(
+                            'skill_name'   => $child_skill->skill_name,
+                            'is_parent'    => $child_skill->is_parent,
+                            'parent_skill' => $child_skill->parent_skill,  // Insert parent_skill
+                            'employee_id'  => $user_id,
+                            'level'        => 0,
+                            'type'         => 'Assigned',
+                        )
+                    );
+                }
+            }
+        }
+
+        echo '<div class="updated"><p>Skill(s) assigned successfully.</p></div>';
+    }
+}
+?>
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
