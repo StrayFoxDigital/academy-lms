@@ -1,3 +1,4 @@
+/* Existing Styles */
 .vulpes-lms-shortcodes table {
     width: 100%;
     border-collapse: collapse;
@@ -106,4 +107,35 @@
 
 .vulpes-lms-shortcodes .clear-filters:hover {
     text-decoration: underline;
+}
+
+/* Container for the skills table */
+.vulpes-lms-shortcodes .vulpes-user-skills-container {
+    margin: 0px 0;
+}
+
+/* Table styling */
+.vulpes-lms-shortcodes .vulpes-skill-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0px;
+}
+
+.vulpes-lms-shortcodes .vulpes-skill-table td {
+    text-align: left;
+    padding: 0px;
+    border: none; /* Ensure no borders as per original request */
+}
+
+/* Child skill styling */
+.vulpes-lms-shortcodes .child-skill td {
+    padding-left: 0px;
+}
+
+/* Progress bar image styling with !important */
+.vulpes-lms-shortcodes .child-skill img {
+    display: block;
+    margin-top: 0px;
+    margin-bottom: 0px; /* Add space after the progress bar image */
+    max-width: 100%; /* Ensure the image doesn't exceed the container width */
 }
