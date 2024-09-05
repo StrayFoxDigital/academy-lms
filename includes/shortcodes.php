@@ -27,6 +27,7 @@ class Vulpes_LMS_Shortcodes
         require_once VULPES_LMS_PATH . 'includes/shortcodes/all_users_shortcode.php';
         require_once VULPES_LMS_PATH . 'includes/shortcodes/manage_user_shortcode.php';
         require_once VULPES_LMS_PATH . 'includes/shortcodes/user_skills.php';
+    	require_once VULPES_LMS_PATH . 'includes/shortcodes/achievements_list.php';
     }
 
     public function enqueue_styles()

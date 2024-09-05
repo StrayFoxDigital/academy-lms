@@ -45,12 +45,12 @@ function vulpes_add_new_group_shortcode() {
             <table class="form-table" style="width: 100%;">
                 <tr valign="top">
                     <th scope="row" style="text-align: left; width: 25%;"><label for="group_name">Group Name</label></th>
-                    <td style="width: 75%;"><input type="text" id="group_name" name="group_name" class="regular-text" required /></td>
+                    <td style="width: 75%;"><input type="text" id="group_name" name="group_name" class="regular-text" style="width: 100%;" required /></td>
                 </tr>
                 <tr valign="top">
                     <th scope="row" style="text-align: left;"><label for="manager">Manager</label></th>
                     <td>
-                        <select id="manager" name="manager" required>
+                        <select id="manager" name="manager" required style="width: 100%;">
                             <option value="">Select a Manager</option>
                             <?php foreach ( $users as $user ) : ?>
                                 <option value="<?php echo esc_attr( $user->ID ); ?>"><?php echo esc_html( $user->display_name ); ?></option>
@@ -59,9 +59,10 @@ function vulpes_add_new_group_shortcode() {
                     </td>
                 </tr>
             </table>
-            <?php submit_button( 'Add Group' ); ?>
+            <div style="text-align: right; margin-top: 10px;">
+                <button type="submit" class="button-primary">Add Group</button>
+            </div>
         </form>
-        <a href="<?php echo site_url('/groups/'); ?>" class="button">Back to Groups</a>
     </div>
     <?php
     return ob_get_clean();

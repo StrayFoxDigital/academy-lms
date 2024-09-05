@@ -35,7 +35,7 @@ function vulpes_user_skills_shortcode($atts)
                         // Display parent skill with inline styles
                 ?>
                         <tr class="parent-skill">
-                            <td style="font-weight: bold; font-size: 1.2em; color: #333; padding-top: 20px; padding-bottom: 10px;">
+                            <td style="font-weight: bold; font-size: 1.2em; color: #333; padding-top: 0px; padding-bottom: 5px;">
                                 <?php echo esc_html($skill->skill_name); ?>
                             </td>
                         </tr>
@@ -46,13 +46,13 @@ function vulpes_user_skills_shortcode($atts)
                             if ($child_skill->parent_skill === $skill->skill_name) {
                         ?>
                                 <tr class="child-skill">
-                                    <td style="padding-left: 20px;">
-                                        — <?php echo esc_html($child_skill->skill_name); ?>
+                                    <td style="padding-left: 20px; padding-bottom: 5px;">
+                                       <?php echo esc_html($child_skill->skill_name); ?>
                                     </td>
                                 </tr>
                                 <tr class="child-skill">
-                                    <td style="padding-left: 20px; padding-top: 0px;"> <!-- Reduced space above the image -->
-                                        <img src="<?php echo esc_url($image_base_url . 'progress-' . intval($child_skill->level) . '.png'); ?>" alt="Level <?php echo esc_attr($child_skill->level); ?>" height="38px" width="500px" style="margin-bottom: 0px;" />
+                                    <td style="padding-left: 20px; padding-right: 100px; padding-bottom: 30px;">
+                                        <img src="<?php echo esc_url($image_base_url . 'progress-' . intval($child_skill->level) . '.png'); ?>" alt="Level <?php echo esc_attr($child_skill->level); ?>" style="margin-bottom: 0px;" />
                                     </td>
                                 </tr>
                 <?php
@@ -64,7 +64,7 @@ function vulpes_user_skills_shortcode($atts)
                 // Display standalone skills
                 ?>
                 <tr class="parent-skill">
-                    <td style="font-weight: bold; font-size: 1.2em; color: #333; padding-top: 20px; padding-bottom: 10px;">
+                    <td style="font-weight: bold; font-size: 1.2em; color: #333; padding-top: 10px; padding-bottom: 5px;">
                         Standalone
                     </td>
                 </tr>
@@ -73,11 +73,13 @@ function vulpes_user_skills_shortcode($atts)
                     if ($skill->parent_skill === 'Standalone') {
                 ?>
                         <tr class="child-skill">
-                            <td style="padding-left: 20px;">— <?php echo esc_html($skill->skill_name); ?></td>
+                            <td style="padding-left: 20px; padding-bottom: 5px;">
+                				<?php echo esc_html($skill->skill_name); ?>
+                			</td>
                         </tr>
                         <tr class="child-skill">
-                            <td style="padding-left: 20px;">
-                                <img src="<?php echo esc_url($image_base_url . 'progress-' . intval($skill->level) . '.png'); ?>" alt="Level <?php echo esc_attr($skill->level); ?>" height="38px" width="500px" />
+                            <td style="padding-left: 20px; padding-right: 100px; padding-bottom: 30px;">
+                                <img src="<?php echo esc_url($image_base_url . 'progress-' . intval($skill->level) . '.png'); ?>" alt="Level <?php echo esc_attr($skill->level); ?>" />
                             </td>
                         </tr>
                 <?php

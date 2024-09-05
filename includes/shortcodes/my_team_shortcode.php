@@ -22,6 +22,9 @@ function vulpes_my_team_shortcode() {
         return '<p>You have no team members.</p>';
     }
 
+    // Define the URL of the manage-user page
+    $manage_user_url = site_url('/manage-user/');
+
     ob_start();
     ?>
     <div class="vulpes-lms-shortcodes">
@@ -51,7 +54,7 @@ function vulpes_my_team_shortcode() {
                         </td>
                         <td><?php echo esc_html( get_user_meta( $user->ID, 'group', true ) ); ?></td>
                         <td>
-                            <a href="#">Manage</a>
+                            <a href="<?php echo esc_url( add_query_arg( 'user_id', $user->ID, $manage_user_url ) ); ?>">Manage</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

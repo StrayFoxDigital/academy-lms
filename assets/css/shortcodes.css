@@ -1,16 +1,37 @@
-/* Existing Styles */
+/* General table styling for Vulpes LMS shortcodes */
 .vulpes-lms-shortcodes table {
     width: 100%;
     border-collapse: collapse;
+	border: 0px solid;
 }
 
 .vulpes-lms-shortcodes table th,
 .vulpes-lms-shortcodes table td {
     text-align: left;
     padding: 8px;
-    border: none; /* Remove borders */
+    border: 0px solid;
+    vertical-align: middle;
 }
 
+.vulpes-lms-shortcodes table td a {
+    display: block;
+    text-align: left;
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.vulpes-lms-shortcodes table td a:hover {
+    text-decoration: underline;
+}
+
+/* Center the images within the table cells */
+.vulpes-lms-shortcodes table td img {
+    display: inline-block;
+    max-width: 50px;
+	vertical-align: middle;
+}
+
+/* User profile styling */
 .vulpes-user-profile {
     text-align: center;
 }
@@ -44,6 +65,7 @@
     font-size: 16px;
 }
 
+/* Container and layout styles */
 .vulpes-lms-shortcodes .wrap {
     display: flex;
     justify-content: space-between;
@@ -80,6 +102,7 @@
     line-height: 20px; /* Align text vertically */
 }
 
+/* Filter styling */
 .vulpes-lms-shortcodes .filters {
     margin-bottom: 20px;
 }
@@ -109,33 +132,26 @@
     text-decoration: underline;
 }
 
-/* Container for the skills table */
+/* Skills table container */
 .vulpes-lms-shortcodes .vulpes-user-skills-container {
     margin: 0px 0;
 }
 
-/* Table styling */
-.vulpes-lms-shortcodes .vulpes-skill-table {
+/* Skills table styling */
+.vulpes-skill-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 0px;
+	border: 0px solid;
 }
 
-.vulpes-lms-shortcodes .vulpes-skill-table td {
+.vulpes-skill-table td {
     text-align: left;
     padding: 0px;
-    border: none; /* Ensure no borders as per original request */
+    border: 0px solid;
 }
 
 /* Child skill styling */
-.vulpes-lms-shortcodes .child-skill td {
-    padding-left: 0px;
-}
-
-/* Progress bar image styling with !important */
-.vulpes-lms-shortcodes .child-skill img {
-    display: block;
-    margin-top: 0px;
-    margin-bottom: 0px; /* Add space after the progress bar image */
-    max-width: 100%; /* Ensure the image doesn't exceed the container width */
+.child-skill td {
+	padding-left: 10px;
+	border: 0px solid;
 }

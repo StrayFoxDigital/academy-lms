@@ -34,6 +34,7 @@ class Vulpes_LMS {
         add_submenu_page( 'vulpes-lms', 'Employee Groups', 'Employee Groups', 'manage_options', 'vulpes-lms-groups', array( $this, 'groups_page' ) );
         add_submenu_page( 'vulpes-lms', 'Reports', 'Reports', 'manage_options', 'vulpes-lms-reports', array( $this, 'reports_page' ) );
         add_submenu_page( 'vulpes-lms', 'Skills Management', 'Skills Management', 'manage_options', 'vulpes-lms-skills', array( $this, 'skills_page' ) );
+        add_submenu_page( 'vulpes-lms', 'Achievements', 'Achievements', 'manage_options', 'vulpes-lms-achievements', array( $this, 'achievements_page' ) );
         add_submenu_page( null, 'Edit Employee', 'Edit Employee', 'manage_options', 'vulpes-lms-edit-employee', array( $this, 'edit_employee_page' ) );
         add_submenu_page( null, 'Edit Group', 'Edit Group', 'manage_options', 'vulpes-lms-edit-group', array( $this, 'edit_group_page' ) );
         add_submenu_page( null, 'Edit Course', 'Edit Course', 'manage_options', 'vulpes-lms-edit-course', array( $this, 'edit_course_page' ) );
@@ -143,6 +144,10 @@ class Vulpes_LMS {
         require_once VULPES_LMS_PATH . 'includes/manage-skill-page.php';
     }
 
+    public function achievements_page() {
+        require_once VULPES_LMS_PATH . 'includes/achievements-page.php';
+    }
+
     public function replace_gravatar_with_custom_avatar( $avatar, $id_or_email, $size, $default, $alt ) {
         $user_id = 0;
         if ( is_numeric( $id_or_email ) ) {
@@ -168,4 +173,3 @@ class Vulpes_LMS {
         return $avatar;
     }
 }
-?>

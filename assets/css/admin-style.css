@@ -2,3 +2,14 @@
 #your-profile .user-profile-picture + .description {
     display: none;
 }
+
+/* Center table content vertically */
+.widefat.fixed tbody tr td {
+    vertical-align: middle;
+}
+
+/* Center the text in table headers for consistency */
+.widefat.fixed thead tr th {
+    text-align: left;
+    vertical-align: middle;
+}

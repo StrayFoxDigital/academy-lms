@@ -85,15 +85,15 @@ function vulpes_manage_group_shortcode() {
     ?>
     <div class="vulpes-lms-shortcodes">
         <form method="post" action="">
-            <table class="form-table">
+            <table class="form-table" style="width: 100%;">
                 <tr valign="top">
-                    <th scope="row"><label for="group_name">Group Name</label></th>
-                    <td><input type="text" id="group_name" name="group_name" class="regular-text" value="<?php echo esc_attr( $group->group_name ); ?>" required /></td>
+                    <th scope="row" style="width: 25%;"><label for="group_name">Group Name</label></th>
+                    <td style="width: 75%;"><input type="text" id="group_name" name="group_name" class="regular-text" style="width: 100%;" value="<?php echo esc_attr( $group->group_name ); ?>" required /></td>
                 </tr>
                 <tr valign="top">
                     <th scope="row"><label for="manager">Manager</label></th>
                     <td>
-                        <select id="manager" name="manager" required>
+                        <select id="manager" name="manager" style="width: 100%;" required>
                             <option value="">Select a Manager</option>
                             <?php foreach ( $managers as $user ) : ?>
                                 <option value="<?php echo esc_attr( $user->ID ); ?>" <?php selected( $user->ID, $group->manager ); ?>><?php echo esc_html( $user->display_name ); ?></option>
@@ -105,15 +105,15 @@ function vulpes_manage_group_shortcode() {
                     <th scope="row"><label for="assigned_users">Assigned Users</label></th>
                     <td>
                         <div style="display: flex;">
-                            <select id="available_users" multiple style="height: 200px; width: 45%; margin-right: 10px;">
+                            <select id="available_users" multiple style="height: 200px; width: 45%; margin-right: 0px;">
                                 <?php foreach ( $all_users as $user ) : ?>
                                     <?php if ( ! in_array( $user->ID, $assigned_users ) && ! in_array( $user->ID, $users_assigned_to_other_groups ) ) : ?>
                                         <option value="<?php echo esc_attr( $user->ID ); ?>"><?php echo esc_html( $user->display_name ); ?></option>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             </select>
-                            <div style="display: flex; flex-direction: column; justify-content: center;">
-                                <button type="button" id="assign_user" class="button">&gt;&gt;</button>
+                            <div style="display: flex; flex-direction: column; justify-content: center; padding: 25px;">
+                                <button type="button" id="assign_user" class="button" style="margin-bottom: 20px;">&gt;&gt;</button>
                                 <button type="button" id="unassign_user" class="button">&lt;&lt;</button>
                             </div>
                             <select id="assigned_users" name="assigned_users[]" multiple style="height: 200px; width: 45%;">
@@ -127,9 +127,10 @@ function vulpes_manage_group_shortcode() {
                     </td>
                 </tr>
             </table>
-            <?php submit_button( 'Update Group' ); ?>
+            <div style="text-align: right;">
+                <button type="submit" class="button-primary">Update Group</button>
+            </div>
         </form>
-        <a href="<?php echo site_url('/groups/'); ?>" class="button">Back to Groups</a>
     </div>
 
     <script type="text/javascript">

@@ -117,6 +117,29 @@ function vulpes_lms_install() {
     ) $charset_collate;";
     dbDelta( $sql );
 
+    // Create achievements table
+    $table_name = $wpdb->prefix . 'vulpes_achievements';
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        achievement_name varchar(255) NOT NULL,
+        description text NOT NULL,
+        img_url_unobtained varchar(255) NOT NULL,
+        img_url_obtained varchar(255) NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+    dbDelta( $sql );
+
+    // Create achievement assignments table
+    $table_name = $wpdb->prefix . 'vulpes_achievement_assignment';
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        achievement_id mediumint(9) NOT NULL,
+        user_id mediumint(9) NOT NULL,
+        obtained boolean NOT NULL DEFAULT 0,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+    dbDelta( $sql );
+
     // Create uploads folder
     $upload_dir = wp_upload_dir();
     $dir = $upload_dir['basedir'] . '/vulpes-lms-uploads';

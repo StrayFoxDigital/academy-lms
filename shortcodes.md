@@ -35,3 +35,7 @@
 ### [vulpes_manage_user]
 
 **Description:** Provides an interface to edit a selected user's information, including their first name, last name, position, manager, and group.
+
+### [vulpes_achievements_list]
+
+**Description:** Provides a full list of custom achievements available within the LMS.
